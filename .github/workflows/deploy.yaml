@@ -1,13 +1,20 @@
 name: Deploy
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+          type: environment
+          description: Select the environment
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
   contents: read
 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
