@@ -3,13 +3,16 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-          type: environment
-          description: Select the environment
+        type: environment
+        description: Select the environment
+      base-name:
+        type: string
+        description: Name used to name all resources created
+        default: mempool-test
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
   contents: read
-
 
 jobs:
   deploy:
@@ -26,9 +29,59 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     
-      - name: Azure CLI script
-        uses: azure/cli@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Plan
+        id: tf-plan
+        run: |
+          export exitcode=0
+          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+  
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else 
+            exit 0
+          fi
+        env:
+          TF_VAR_base_name: ${{ inputs.base-name }}
+      
+      - name: Publish Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+      
+      - name: Create String Output
+        id: tf-plan-string
+        run: |
+          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          
+          delimiter="$(openssl rand -hex 8)"
+          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```terraform' >> $GITHUB_OUTPUT
+          echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+      
+      - name: Publish Terraform Plan to Task Summary
+        env:
+          SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
+        run: |
+          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+        
