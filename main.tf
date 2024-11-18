@@ -15,6 +15,10 @@ terraform {
   }
 }
 
+provider "azurerm" {
+  features {}
+}
+
 variable "base_name" {
   type = string
 }
