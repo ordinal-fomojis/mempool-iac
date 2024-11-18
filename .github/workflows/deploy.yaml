@@ -24,6 +24,8 @@ jobs:
   terraform-plan:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    outputs:
+      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
