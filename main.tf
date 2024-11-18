@@ -10,7 +10,7 @@ terraform {
     resource_group_name  = "iac"
     storage_account_name = "fomojisterraform"
     container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+    key                  = "${var.base_name}-terraform.tfstate"
     use_oidc             = true
   }
 }
