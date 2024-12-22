@@ -19,11 +19,11 @@ provider "azurerm" {
   features {}
 }
 
-variable "base_name" {
+variable "rg_name" {
   type = string
 }
 
 resource "azurerm_resource_group" "example" {
-  name     = var.base_name
+  name     = var.rg_name
   location = "East US"
 }

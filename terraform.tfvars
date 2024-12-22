@@ -1,1 +1,1 @@
-base_name = "test"
+rg_name = "mempool-test"
