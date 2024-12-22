@@ -28,20 +28,20 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "random_pet" "azurerm_kubernetes_cluster_name" {
+resource "random_pet" "aks_cluster_name" {
   prefix = "cluster"
 }
 
-resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
+resource "random_pet" "aks_cluster_dns_prefix" {
   prefix = "dns"
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = random_pet.azurerm_kubernetes_cluster_name.id
+  name                = random_pet.aks_cluster_name.id
   location            = var.location
   resource_group_name = var.rg_name
-  dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
-  
+  dns_prefix          = random_pet.aks_cluster_dns_prefix.id
+
   default_node_pool {
     name       = "default"
     node_count = 2
