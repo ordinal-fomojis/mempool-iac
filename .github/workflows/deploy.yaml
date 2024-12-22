@@ -1,14 +1,6 @@
 name: Deploy
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        type: environment
-        description: Select the environment
-      base-name:
-        type: string
-        description: Name used to name all resources created
-        default: mempool-test
+  push
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
@@ -22,8 +14,9 @@ env:
 
 jobs:
   terraform-plan:
+    name: 'Terraform Plan'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: production
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
     steps:
@@ -62,8 +55,6 @@ jobs:
           else 
             exit 0
           fi
-        env:
-          TF_VAR_base_name: ${{ inputs.base-name }}
       
       - name: Publish Terraform Plan
         uses: actions/upload-artifact@v4
@@ -85,9 +76,9 @@ jobs:
 
   terraform-apply:
     name: 'Terraform Apply'
-    if: needs.terraform-plan.outputs.tfplanExitCode == 2
+    if: needs.terraform-plan.outputs.tfplanExitCode == 2 && github.ref_name == 'main'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: production
     needs: [terraform-plan]
     
     steps:
