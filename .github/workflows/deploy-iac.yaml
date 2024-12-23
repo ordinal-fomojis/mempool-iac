@@ -103,7 +103,7 @@ jobs:
     
     steps:
     - name: Await Approval
-      if: ${{ inputs.environment == 'prod' }}
+      if: ${{ inputs.environment || 'prod' == 'prod' }}
       uses: trstringer/manual-approval@v1
       with:
         secret: ${{ github.TOKEN }}
@@ -123,7 +123,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3
     
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -backend-config="key=terraform-${{ inputs.environment || 'prod' }}.tfstate"
 
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
