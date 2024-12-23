@@ -56,7 +56,7 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init
-        run: terraform init -backend-config="container_name=tfstate-${{ inputs.environment }}.tfstate"
+        run: terraform init -backend-config="container_name=tfstate-${{ inputs.environment || 'prod' }}.tfstate"
       
       - name: Terraform Format
         run: terraform fmt -check
