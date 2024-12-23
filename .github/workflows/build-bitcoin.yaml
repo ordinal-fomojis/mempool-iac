@@ -1,11 +1,5 @@
-name: Deploy Application
+name: Build Bitcoin
 on:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'k8s/**'
-  #     - '.github/workflows/deploy-application.yaml'
   workflow_dispatch: ~
 
 permissions:
@@ -19,7 +13,7 @@ env:
 
 jobs:
   deploy-application:
-    name: 'Deploy Application'
+    name: 'Build Bitcoin'
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -39,28 +33,18 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
         working-directory: terraform
 
-      - name: Get Cluster Details
-        id: cluster-details
+      - name: Get ACR Details
+        id: acr-details
         run: |
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
-          echo "k8s_cluster_name=$(terraform output -raw k8s_cluster_name)" >> $GITHUB_OUTPUT
+          echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
-      - name: Set up kubelogin for non-interactive login
-        uses: azure/use-kubelogin@v1
-        with:
-          kubelogin-version: 'v0.0.25'
-
-      - name: Get K8s context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ steps.cluster-details.outputs.rg_name }}
-          cluster-name: ${{ steps.cluster-details.outputs.k8s_cluster_name }}
-          admin: 'false'
-          use-kubelogin: 'true'
-
-      - name: Deploy Application
-        run: kubectl apply -f k8s/manifest.yaml
+      - name: Build and Push Bitcoin
+        run: |
+          az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
+            --registry ${{ steps.acr-details.outputs.acr_name }} \
+            -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
