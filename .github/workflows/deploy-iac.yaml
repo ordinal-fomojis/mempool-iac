@@ -7,7 +7,16 @@ on:
     paths:
       - 'terraform/**'
       - '.github/workflows/deploy-iac.yaml'
-  workflow_dispatch: ~
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - nonprod
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
@@ -48,6 +57,7 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        args: -backend-config="container_name=tfstate-${{ inputs.environment }}.tfstate"
       
       - name: Terraform Format
         run: terraform fmt -check
@@ -94,6 +104,7 @@ jobs:
     
     steps:
     - name: Await Approval
+      if: ${{ inputs.environment == 'prod' }}
       uses: trstringer/manual-approval@v1
       with:
         secret: ${{ github.TOKEN }}

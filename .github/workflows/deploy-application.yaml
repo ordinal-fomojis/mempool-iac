@@ -1,11 +1,11 @@
 name: Deploy Application
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'k8s/**'
-      - '.github/workflows/deploy-application.yaml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'k8s/**'
+  #     - '.github/workflows/deploy-application.yaml'
   workflow_dispatch: ~
 
 permissions:
