@@ -31,6 +31,8 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
+############ AKS Cluster ############
+
 resource "random_pet" "aks_cluster_name" {
   prefix = "cluster"
 }
@@ -54,4 +56,21 @@ resource "azurerm_kubernetes_cluster" "aks" {
   identity {
     type = "SystemAssigned"
   }
+}
+
+############ Azure Container Registry ############
+
+resource "random_string" "acr_name" {
+  length  = 5
+  lower   = true
+  numeric = false
+  special = false
+  upper   = false
+}
+
+resource "azurerm_container_registry" "acr" {
+  name                = "${random_string.acr_name.result}-registry"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Basic"
 }
