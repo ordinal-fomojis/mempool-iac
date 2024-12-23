@@ -13,7 +13,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "iac"
     storage_account_name = "fomojisterraform"
-    key                  = "terraform.tfstate"
+    container_name       = "tfstate"
     use_oidc             = true
   }
 }
