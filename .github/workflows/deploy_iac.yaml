@@ -1,5 +1,16 @@
-name: Deploy
-on: [push, workflow_dispatch]
+name: Deploy IaC
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/deploy_iac.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/deploy_iac.yaml'
+  workflow_dispatch: ~
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
@@ -111,6 +122,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: tfplan
+        path: terraform/tfplan
 
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
