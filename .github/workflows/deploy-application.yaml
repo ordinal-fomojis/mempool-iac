@@ -1,0 +1,70 @@
+name: Deploy Application
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/deploy-application.yaml'
+  workflow_dispatch: ~
+
+permissions:
+  id-token: write # Required for OIDC authentication with Azure
+  contents: read
+  issues: write
+
+env:
+  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+
+
+jobs:
+  deploy-application:
+    name: 'Deploy Application'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure CLI Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Get Cluster Details
+        id: cluster-details
+        run: |
+          echo "rg_name=$(terraform output rg_name)" >> $GITHUB_OUTPUT
+          echo "k8s_cluster_name=$(terraform output k8s_cluster_name)" >> $GITHUB_OUTPUT
+        working-directory: terraform
+
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.25'
+
+      - name: Get K8s context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ steps.cluster-details.outputs.rg_name }}
+          cluster-name: ${{ steps.cluster-details.outputs.k8s_cluster_name }}
+          admin: 'false'
+          use-kubelogin: 'true'
+
+      - name: Deploy Application
+        run: |
+          kubectl get nodes
+          kubectl apply -f k8s/manifest.yaml
