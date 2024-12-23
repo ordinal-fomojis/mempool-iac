@@ -3,13 +3,13 @@ on:
   pull_request:
     paths:
       - 'terraform/**'
-      - '.github/workflows/deploy_iac.yaml'
+      - '.github/workflows/deploy-iac.yaml'
   push:
     branches:
       - main
     paths:
       - 'terraform/**'
-      - '.github/workflows/deploy_iac.yaml'
+      - '.github/workflows/deploy-iac.yaml'
   workflow_dispatch: ~
 
 permissions:
@@ -122,7 +122,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: tfplan
-        path: terraform/tfplan
+        path: terraform
 
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
