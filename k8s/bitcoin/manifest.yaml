@@ -41,7 +41,7 @@ spec:
       containers:
       - args:
         - -testnet4
-        image: not-set
+        image: viaafregistry.azurecr.io/bitcoin:bf76bc56faa0ed0cd43d1072fe9e923687082a3b
         name: bitcoin-testnet
         volumeMounts:
         - mountPath: /root/.bitcoin
