@@ -7,7 +7,7 @@ RUN apt-get install --yes build-essential libtool autotools-dev automake \
   pkg-config bsdmainutils python3 libevent-dev libboost-dev git
 
 RUN git clone https://github.com/bitcoin/bitcoin.git
-WORKDIR bitcoin
+WORKDIR /root/bitcoin
 RUN git checkout v28.0
 
 RUN ./autogen.sh
@@ -18,8 +18,9 @@ RUN make install
 FROM debian:12.8 AS main
 
 COPY --from=build /usr /usr
-COPY ./bitcoin.conf bitcoin.conf
+COPY ./bitcoin.conf /root/bitcoin.conf
+RUN mkdir /root/.bitcoin
 
-EXPOSE 8332 8333
+EXPOSE 8332 8333 18332 18333
 
-CMD ["bitcoind", "--conf=/bitcoin.conf"]
+ENTRYPOINT ["bitcoind", "--conf=/root/bitcoin.conf", "--datadir=/root/.bitcoin"]
