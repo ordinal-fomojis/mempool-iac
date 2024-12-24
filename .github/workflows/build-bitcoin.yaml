@@ -56,5 +56,5 @@ jobs:
       - name: Build and Push Bitcoin
         run: |
           az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
-            --registry ${{ steps.acr-details.outputs.acr_name }} \
+            --registry ${{ steps.acr-details.outputs.acr_name }} --platform linux/amd64,linux/arm64 \
             -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
