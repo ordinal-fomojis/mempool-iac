@@ -24,7 +24,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: production
     steps:
       - name: Checkout
@@ -56,5 +56,5 @@ jobs:
       - name: Build and Push Bitcoin
         run: |
           az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
-            --registry ${{ steps.acr-details.outputs.acr_name }} --platform linux/arm64 \
+            --registry ${{ steps.acr-details.outputs.acr_name }} \
             -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
