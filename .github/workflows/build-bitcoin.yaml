@@ -59,13 +59,14 @@ jobs:
             --registry ${{ steps.acr-details.outputs.acr_name }} \
             -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
       - name: Update Image Tag
         run: |
-          pip install -r requirements.txt
+          pip install -r scripts/requirements.txt
           python scripts/update_image_tag.py
         env:
           IMAGE: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
