@@ -60,8 +60,8 @@ jobs:
             -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
 
       - uses: actions/setup-python@v5
-      with:
-        python-version: '3.13'
+        with:
+          python-version: '3.13'
 
       - name: Update Image Tag
         run: |
