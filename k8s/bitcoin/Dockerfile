@@ -12,8 +12,8 @@ RUN git checkout v28.0
 
 RUN ./autogen.sh
 RUN ./configure --disable-wallet --disable-tests --with-gui=no
-# RUN make
-# RUN make install
+RUN make
+RUN make install
 
 FROM debian:12.8 AS main
 
