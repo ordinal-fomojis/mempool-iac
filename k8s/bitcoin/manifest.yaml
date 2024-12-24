@@ -19,19 +19,19 @@ spec:
     app: bitcoin-testnet
   ports:
     - protocol: TCP
-      name: http
+      name: rpc
       port: 8332
       targetPort: 8332
     - protocol: TCP
-      name: http
+      name: p2p
       port: 8333
       targetPort: 8333
     - protocol: TCP
-      name: http
+      name: rpc-testnet
       port: 18332
       targetPort: 18332
     - protocol: TCP
-      name: http
+      name: p2p-testnet
       port: 18333
       targetPort: 18333
 ---
