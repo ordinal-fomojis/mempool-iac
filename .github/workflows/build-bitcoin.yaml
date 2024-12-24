@@ -58,3 +58,28 @@ jobs:
           az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
             --registry ${{ steps.acr-details.outputs.acr_name }} \
             -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
+
+        - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+  
+        - name: Update Image Tag
+          run: |
+            pip install -r requirements.txt
+            python scripts/update_image_tag.py
+          env:
+            IMAGE: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
+        
+        # - name: Raise PR
+        # - name: Create Branch
+        #   run: |
+        #     git checkout -b update-image-tag-${{ github.sha }}
+        #     git add .
+        #     git commit -m "Update image tag to ${{ github.sha }}"
+        #     git push origin update-image-tag-${{ github.sha }}
+        - name: Create Pull Request
+          uses: peter-evans/create-pull-request@v7
+          with:
+            commit-message: '[Bot] Update bitcoin image'
+            branch: update-bitcoin-image
+            title: '[Bot] Update bitcoin image'
