@@ -13,7 +13,7 @@ def main():
         obj['spec']['template']['spec']['containers'][0]['image'] = IMAGE
 
     with open('k8s/bitcoin/manifest.yaml', 'w') as f:
-        yaml.dump(manifest, f)
+        yaml.dump_all(manifest, f)
 
 
 if __name__ == '__main__':

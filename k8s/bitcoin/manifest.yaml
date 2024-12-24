@@ -1,58 +1,59 @@
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: bitcoin-testnet
-  spec:
-    ports:
-    - name: rpc
-      port: 8332
-      protocol: TCP
-      targetPort: 8332
-    - name: p2p
-      port: 8333
-      protocol: TCP
-      targetPort: 8333
-    - name: rpc-testnet
-      port: 18332
-      protocol: TCP
-      targetPort: 18332
-    - name: p2p-testnet
-      port: 18333
-      protocol: TCP
-      targetPort: 18333
-    selector:
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitcoin-testnet
+spec:
+  ports:
+  - name: rpc
+    port: 8332
+    protocol: TCP
+    targetPort: 8332
+  - name: p2p
+    port: 8333
+    protocol: TCP
+    targetPort: 8333
+  - name: rpc-testnet
+    port: 18332
+    protocol: TCP
+    targetPort: 18332
+  - name: p2p-testnet
+    port: 18333
+    protocol: TCP
+    targetPort: 18333
+  selector:
+    app: bitcoin-testnet
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bitcoin-testnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
       app: bitcoin-testnet
-- apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    name: bitcoin-testnet
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
+  serviceName: bitcoin-testnet
+  template:
+    metadata:
+      labels:
         app: bitcoin-testnet
-    serviceName: bitcoin-testnet
-    template:
-      metadata:
-        labels:
-          app: bitcoin-testnet
-      spec:
-        containers:
-        - args:
-          - -testnet4
-          image: viaafregistry.azurecr.io/bitcoin:8fadfd32b4c7de024da85db3fd68b94da4df4305
-          name: bitcoin-testnet
-          volumeMounts:
-          - mountPath: /root/.bitcoin
-            name: bitcoin-testnet
-        restartPolicy: Always
-    volumeClaimTemplates:
-    - metadata:
+    spec:
+      containers:
+      - args:
+        - -testnet4
+        image: not-set
         name: bitcoin-testnet
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 100Gi
-        storageClassName: managed
+        volumeMounts:
+        - mountPath: /root/.bitcoin
+          name: bitcoin-testnet
+      restartPolicy: Always
+  volumeClaimTemplates:
+  - metadata:
+      name: bitcoin-testnet
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Gi
+      storageClassName: managed
