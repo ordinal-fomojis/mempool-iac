@@ -53,7 +53,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: bitcoin-testnet
-          image: viaafregistry.azurecr.io/bitcoin:4f2e63e3b1791ab335f83d3bac2d30bbea56a192
+          image: viaafregistry.azurecr.io/bitcoin:67996df3aab0d82759bb56f0cdb7cac853f78fa7
           args: ["-testnet4"]
           volumeMounts:
             - name: bitcoin-testnet
