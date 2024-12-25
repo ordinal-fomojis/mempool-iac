@@ -1,4 +1,4 @@
-FROM debian:12.8 AS build
+FROM --platform=arm64 debian:12.8 AS build
 
 WORKDIR /root
 
@@ -15,7 +15,7 @@ RUN ./configure --disable-wallet --disable-tests --with-gui=no
 # RUN make
 # RUN make install
 
-FROM debian:12.8 AS main
+FROM --platform=arm64 debian:12.8 AS main
 
 COPY --from=build /usr /usr
 COPY ./bitcoin.conf /root/bitcoin.conf
