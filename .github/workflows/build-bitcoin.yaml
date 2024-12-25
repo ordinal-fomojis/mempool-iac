@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: production
     steps:
       - name: Checkout
@@ -54,18 +54,24 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
       
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Bitcoin Image
         run: |
-          brew install docker
-          brew install colima
-          colima start
           az acr login --name ${{ steps.acr-details.outputs.acr_name }}
-          docker build --platform linux/arm64 --push \
-            -t ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} k8s/bitcoin
 
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: k8s/bitcoin
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} k8s/bitcoin
+      
       # - name: Build and Push Bitcoin
       #   run: |
       #     az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
