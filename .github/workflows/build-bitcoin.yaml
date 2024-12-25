@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: production
     steps:
       - name: Checkout
@@ -59,6 +59,9 @@ jobs:
 
       - name: Build Bitcoin Image
         run: |
+          brew install docker
+          brew install colima
+          colima start
           az acr login --name ${{ steps.acr-details.outputs.acr_name }}
           docker build --platform linux/arm64 --push \
             -t ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} k8s/bitcoin
