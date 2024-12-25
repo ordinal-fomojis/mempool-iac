@@ -53,6 +53,7 @@ jobs:
       - name: Install docker
         run: |
           brew install docker
+          brew install colima
           colima start
 
       # - name: Set up QEMU
