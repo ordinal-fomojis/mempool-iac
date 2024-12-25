@@ -60,7 +60,7 @@ jobs:
       - name: Build Bitcoin Image
         run: |
           az acr login --name ${{ steps.acr-details.outputs.acr_name }}
-          docker buildx build --platform linux/amd64,linux/arm64 --push \
+          docker build --platform linux/arm64 --push \
             -t ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} k8s/bitcoin
 
       # - name: Build and Push Bitcoin
