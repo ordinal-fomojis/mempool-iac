@@ -50,11 +50,11 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
       
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
 
       - name: ACR Login
         run: |
@@ -67,12 +67,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
-      
-      # - name: Build and Push Bitcoin
-      #   run: |
-      #     az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
-      #       --registry ${{ steps.acr-details.outputs.acr_name }} \
-      #       -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
 
       - name: Setup Python
         uses: actions/setup-python@v5
