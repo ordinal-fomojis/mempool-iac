@@ -50,14 +50,8 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
       
-      - name: Install docker
-        run: |
-          brew install docker
-          brew install colima
-          colima start
-
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -70,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: k8s/bitcoin
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: true
           tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
 

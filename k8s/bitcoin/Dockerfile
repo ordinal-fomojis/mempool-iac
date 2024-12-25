@@ -1,4 +1,4 @@
-FROM --platform=arm64 debian:12.8 AS build
+FROM debian:12.8 AS build
 
 WORKDIR /root
 
@@ -12,10 +12,10 @@ RUN git checkout v28.0
 
 RUN ./autogen.sh
 RUN ./configure --disable-wallet --disable-tests --with-gui=no
-# RUN make
-# RUN make install
+RUN make
+RUN make install
 
-FROM --platform=arm64 debian:12.8 AS main
+FROM debian:12.8 AS main
 
 COPY --from=build /usr /usr
 COPY ./bitcoin.conf /root/bitcoin.conf
