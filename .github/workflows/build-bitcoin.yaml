@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: production
     steps:
       - name: Checkout
@@ -50,6 +50,11 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
       
+      - name: Install docker
+        run: |
+          brew install docker
+          colima start
+
       # - name: Set up QEMU
       #   uses: docker/setup-qemu-action@v3
 
