@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: production
     steps:
       - name: Checkout
@@ -54,10 +54,10 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
 
-      - name: Login to ACR
+      - name: Build Bitcoin Image
         run: |
           az acr login --name ${{ steps.acr-details.outputs.acr_name }}
           docker buildx build --platform linux/amd64,linux/arm64 --push \
