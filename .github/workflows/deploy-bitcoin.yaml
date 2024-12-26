@@ -15,6 +15,14 @@ on:
         options:
           - prod
           - nonprod
+      mainnet:
+        description: 'Deploy mainnet'
+        default: 'false'
+        type: boolean
+      testnet:
+        description: 'Deploy testnet'
+        default: 'true'
+        type: boolean
 
 permissions:
   id-token: write # Required for OIDC authentication with Azure
@@ -25,6 +33,8 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ENVIRONMENT: ${{ inputs.environment || 'prod' }}
+  DEPLOY_TESTNET: ${{ inputs.testnet || 'true' }}
+  DEPLOY_MAINNET: ${{ inputs.mainnet || 'false' }}
 
 jobs:
   deploy-application:
@@ -71,5 +81,10 @@ jobs:
           admin: 'false'
           use-kubelogin: 'true'
 
-      - name: Deploy Application
-        run: kubectl apply -f k8s/bitcoin/manifest.yaml
+      - name: Deploy Testnet
+        if: ${{ inputs.testnet == 'true' }}
+        run: kubectl apply -f k8s/bitcoin/testnet.yaml
+        
+      - name: Deploy Mainnet
+        if: ${{ inputs.mainnet == 'true' }}
+        run: kubectl apply -f k8s/bitcoin/mainnet.yaml

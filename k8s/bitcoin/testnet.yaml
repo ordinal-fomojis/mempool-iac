@@ -4,24 +4,13 @@ metadata:
   name: bitcoin-testnet
 spec:
   ports:
-  - name: rpc
-    port: 8332
-    protocol: TCP
-    targetPort: 8332
-  - name: p2p
-    port: 8333
-    protocol: TCP
-    targetPort: 8333
-  - name: rpc-testnet
+  - nodePort: 30001
     port: 18332
     protocol: TCP
     targetPort: 18332
-  - name: p2p-testnet
-    port: 18333
-    protocol: TCP
-    targetPort: 18333
   selector:
     app: bitcoin-testnet
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -41,7 +30,7 @@ spec:
       containers:
       - args:
         - -testnet4
-        image: uasynregistry.azurecr.io/bitcoin:76bd572667df9e324e5b8f53725bbb3ece45b017
+        image: viaafregistry.azurecr.io/bitcoin:bf76bc56faa0ed0cd43d1072fe9e923687082a3b
         name: bitcoin-testnet
         volumeMounts:
         - mountPath: /root/.bitcoin
