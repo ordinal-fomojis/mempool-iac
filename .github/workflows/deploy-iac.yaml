@@ -97,7 +97,12 @@ jobs:
           FORMATTED_PLAN+="</details>"
 
           echo -e $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
-          echo -e "formatted_plan=$FORMATTED_PLAN" >> $GITHUB_OUTPUT
+
+          {
+            echo 'formatted_plan<<EOF'
+            echo -e $FORMATTED_PLAN
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
   terraform-apply:
     name: 'Terraform Apply'
