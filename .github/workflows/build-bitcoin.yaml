@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: production
     steps:
       - name: Checkout
@@ -86,3 +86,4 @@ jobs:
           commit-message: '[Bot] Update bitcoin image'
           branch: update-bitcoin-image
           title: '[Bot] Update bitcoin image'
+          add-paths: 'k8s/bitcoin/manifest.yaml'
