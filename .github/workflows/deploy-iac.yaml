@@ -96,11 +96,11 @@ jobs:
           FORMATTED_PLAN+='```\n'
           FORMATTED_PLAN+="</details>"
 
-          echo -e $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
+          printf "%s" "$FORMATTED_PLAN" >> $GITHUB_STEP_SUMMARY
 
           {
             echo 'formatted_plan<<EOF'
-            echo -e $FORMATTED_PLAN
+            printf "%s" "$FORMATTED_PLAN"
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
