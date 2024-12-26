@@ -50,12 +50,8 @@ jobs:
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: ACR Login
-        run: |
-          az acr login --name ${{ steps.acr-details.outputs.acr_name }}
+        run: az acr login --name ${{ steps.acr-details.outputs.acr_name }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
