@@ -3,14 +3,14 @@ kind: Service
 metadata:
   name: bitcoin
 spec:
-  type: LoadBalancer
   ports:
-  - port: 8332
+  - nodePort: 30002
+    port: 8332
     protocol: TCP
     targetPort: 8332
-    nodePort: 30002
   selector:
     app: bitcoin
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: StatefulSet
