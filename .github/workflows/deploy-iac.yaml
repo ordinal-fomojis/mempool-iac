@@ -96,8 +96,8 @@ jobs:
           FORMATTED_PLAN+='```\n'
           FORMATTED_PLAN+="</details>"
 
-          echo $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
-          echo "formatted_plan=$FORMATTED_PLAN" >> $GITHUB_OUTPUT
+          echo -e $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
+          echo -e "formatted_plan=$FORMATTED_PLAN" >> $GITHUB_OUTPUT
 
   terraform-apply:
     name: 'Terraform Apply'
