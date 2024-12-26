@@ -40,6 +40,7 @@ jobs:
     environment: production
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+      formatted_plan: ${{ steps.publish-terraform-plan.outputs.formatted_plan }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,9 +85,16 @@ jobs:
           path: terraform/tfplan
       
       - name: Publish Terraform Plan to Task Summary
+        id: publish-terraform-plan
         run: |
           TERRAFORM_PLAN=$(terraform show -no-color tfplan)
           
+          FORMATTED_PLAN="## Terraform Plan Output\n"
+          FORMATTED_PLAN+="<details><summary>Click to expand</summary>\n\n"
+          FORMATTED_PLAN+="```terraform\n"
+          FORMATTED_PLAN+="$TERRAFORM_PLAN\n"
+          FORMATTED_PLAN+="```\n"
+          FORMATTED_PLAN+="</details>"
           echo "## Terraform Plan Output" >> $GITHUB_STEP_SUMMARY
           echo "<details><summary>Click to expand</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -95,12 +103,18 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
+          echo $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
+
+          echo "formatted_plan=$FORMATTED_PLAN" >> $GITHUB_OUTPUT
+
   terraform-apply:
     name: 'Terraform Apply'
     if: needs.terraform-plan.outputs.tfplanExitCode == 2 && github.ref_name == 'main'
     runs-on: ubuntu-latest
     environment: production
     needs: [terraform-plan]
+    - env:
+        FORMATTED_PLAN: ${{ needs.terraform-plan.outputs.formatted_plan }}
     
     steps:
     - name: Await Approval
@@ -109,6 +123,8 @@ jobs:
       with:
         secret: ${{ github.TOKEN }}
         approvers: Vanniix
+        issue-title: "Approval of Terraform Plan"
+        issue-body: "Do you want to apply this terraform plan?\n$FORMATTED_PLAN"
     
     - name: Checkout
       uses: actions/checkout@v4
