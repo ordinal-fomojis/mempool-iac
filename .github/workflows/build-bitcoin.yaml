@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: ubuntu-latest
+    runs-on: linux-arm64
     environment: production
     steps:
       - name: Checkout
@@ -47,24 +47,17 @@ jobs:
         id: acr-details
         run: |
           terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
-          echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
+          acr_name=$(terraform output -raw acr_name)
+          az acr login --name $acr_name
         working-directory: terraform
-      
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: ACR Login
-        run: |
-          az acr login --name ${{ steps.acr-details.outputs.acr_name }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: k8s/bitcoin
-          platforms: linux/arm64
           push: true
           tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
 
