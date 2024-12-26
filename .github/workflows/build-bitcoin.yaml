@@ -53,6 +53,9 @@ jobs:
       - name: ACR Login
         run: az acr login --name ${{ steps.acr-details.outputs.acr_name }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
