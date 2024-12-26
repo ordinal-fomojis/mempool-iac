@@ -114,7 +114,7 @@ jobs:
     environment: production
     needs: [terraform-plan]
     - env:
-        FORMATTED_PLAN: ${{ needs.terraform-plan.outputs.formatted_plan }}
+      FORMATTED_PLAN: ${{ needs.terraform-plan.outputs.formatted_plan }}
     
     steps:
     - name: Await Approval
