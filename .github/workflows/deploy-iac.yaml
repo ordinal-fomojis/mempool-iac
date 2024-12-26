@@ -113,8 +113,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: [terraform-plan]
-    - env:
-      FORMATTED_PLAN: ${{ needs.terraform-plan.outputs.formatted_plan }}
     
     steps:
     - name: Await Approval
@@ -124,7 +122,7 @@ jobs:
         secret: ${{ github.TOKEN }}
         approvers: Vanniix
         issue-title: "Approval of Terraform Plan"
-        issue-body: "Do you want to apply this terraform plan?\n$FORMATTED_PLAN"
+        issue-body: "Do you want to apply this terraform plan?\n${{ needs.terraform-plan.outputs.formatted_plan }}"
     
     - name: Checkout
       uses: actions/checkout@v4
