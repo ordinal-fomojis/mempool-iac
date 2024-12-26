@@ -89,18 +89,18 @@ jobs:
         run: |
           TERRAFORM_PLAN=$(terraform show -no-color tfplan)
           
-          FORMATTED_PLAN="## Terraform Plan Output\n"
-          FORMATTED_PLAN+="<details><summary>Click to expand</summary>\n\n"
-          FORMATTED_PLAN+='```terraform\n'
-          FORMATTED_PLAN+="$TERRAFORM_PLAN\n"
-          FORMATTED_PLAN+='```\n'
-          FORMATTED_PLAN+="</details>"
+          FORMATTED_PLAN=$'## Terraform Plan Output\n'
+          FORMATTED_PLAN+=$'<details><summary>Click to expand</summary>\n\n'
+          FORMATTED_PLAN+=$'```terraform\n'
+          FORMATTED_PLAN+=$'$TERRAFORM_PLAN\n'
+          FORMATTED_PLAN+=$'```\n'
+          FORMATTED_PLAN+=$'</details>'
 
-          printf "%s" "$FORMATTED_PLAN" >> $GITHUB_STEP_SUMMARY
+          echo "$FORMATTED_PLAN" >> $GITHUB_STEP_SUMMARY
 
           {
             echo 'formatted_plan<<EOF'
-            printf "%s" "$FORMATTED_PLAN"
+            echo "$FORMATTED_PLAN"
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
