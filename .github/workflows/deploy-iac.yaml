@@ -91,20 +91,12 @@ jobs:
           
           FORMATTED_PLAN="## Terraform Plan Output\n"
           FORMATTED_PLAN+="<details><summary>Click to expand</summary>\n\n"
-          FORMATTED_PLAN+="```terraform\n"
+          FORMATTED_PLAN+='```terraform\n'
           FORMATTED_PLAN+="$TERRAFORM_PLAN\n"
-          FORMATTED_PLAN+="```\n"
+          FORMATTED_PLAN+='```\n'
           FORMATTED_PLAN+="</details>"
-          echo "## Terraform Plan Output" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>Click to expand</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```terraform' >> $GITHUB_STEP_SUMMARY
-          echo "$TERRAFORM_PLAN" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
           echo $FORMATTED_PLAN >> $GITHUB_STEP_SUMMARY
-
           echo "formatted_plan=$FORMATTED_PLAN" >> $GITHUB_OUTPUT
 
   terraform-apply:
