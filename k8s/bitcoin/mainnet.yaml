@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitcoin
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8332
+    protocol: TCP
+    targetPort: 8332
+    nodePort: 30002
+  selector:
+    app: bitcoin
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bitcoin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitcoin
+  serviceName: bitcoin
+  template:
+    metadata:
+      labels:
+        app: bitcoin
+    spec:
+      containers:
+      - image: viaafregistry.azurecr.io/bitcoin:bf76bc56faa0ed0cd43d1072fe9e923687082a3b
+        name: bitcoin
+        volumeMounts:
+        - mountPath: /root/.bitcoin
+          name: bitcoin
+      restartPolicy: Always
+  volumeClaimTemplates:
+  - metadata:
+      name: bitcoin
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Ti
+      storageClassName: managed

@@ -59,6 +59,8 @@ jobs:
           context: k8s/bitcoin
           push: true
           tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -78,4 +80,4 @@ jobs:
           commit-message: '[Bot] Update bitcoin image'
           branch: update-bitcoin-image
           title: '[Bot] Update bitcoin image'
-          add-paths: 'k8s/bitcoin/manifest.yaml'
+          add-paths: 'k8s/bitcoin/*.yaml'
