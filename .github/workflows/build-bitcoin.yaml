@@ -25,7 +25,7 @@ env:
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
-    runs-on: macos-latest
+    runs-on: linux-arm64
     environment: production
     steps:
       - name: Checkout
@@ -43,22 +43,22 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform Init
-        run: terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
-        working-directory: terraform
-
       - name: Get ACR Details
         id: acr-details
         run: |
-          echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
+          terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
-      - name: Build and Push Bitcoin
-        run: |
-          az acr build --image ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }} \
-            --registry ${{ steps.acr-details.outputs.acr_name }} \
-            -g ${{ steps.acr-details.outputs.rg_name }} k8s/bitcoin
+      - name: ACR Login
+        run: az acr login --name ${{ steps.acr-details.outputs.acr_name }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: k8s/bitcoin
+          push: true
+          tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -72,16 +72,10 @@ jobs:
         env:
           IMAGE: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
         
-        # - name: Raise PR
-        # - name: Create Branch
-        #   run: |
-        #     git checkout -b update-image-tag-${{ github.sha }}
-        #     git add .
-        #     git commit -m "Update image tag to ${{ github.sha }}"
-        #     git push origin update-image-tag-${{ github.sha }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: '[Bot] Update bitcoin image'
           branch: update-bitcoin-image
           title: '[Bot] Update bitcoin image'
+          add-paths: 'k8s/bitcoin/manifest.yaml'
