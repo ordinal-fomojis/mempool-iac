@@ -33,9 +33,16 @@ spec:
         image: vxeumregistry.azurecr.io/bitcoin:0058c1edeafa50afde9057caaf91e1158da4d634
         name: bitcoin-testnet
         volumeMounts:
-        - mountPath: /root/.bitcoin
+        - mountPath: ~/.bitcoin
           name: bitcoin-testnet
+        - mountPath: "~"
+          name: bitcoin-conf
+          readOnly: true
       restartPolicy: Always
+      volumes:
+      - name: bitcoin-conf
+        configMap:
+          name: bitcoin-conf
   volumeClaimTemplates:
   - metadata:
       name: bitcoin-testnet
