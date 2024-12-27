@@ -86,8 +86,12 @@ resource "azurerm_role_assignment" "acr_role" {
 
 ############ Azure Key Vault ############
 
+resource "random_pet" "kv-name" {
+  prefix = "kv"
+}
+
 resource "azurerm_key_vault" "kv" {
-  name                        = "keyvault"
+  name                        = random_pet.kv-name.id
   location                    = azurerm_resource_group.rg.location
   resource_group_name         = azurerm_resource_group.rg.name
   enabled_for_disk_encryption = true
