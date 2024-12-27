@@ -18,8 +18,8 @@ RUN make install
 FROM debian:12.8 AS main
 
 COPY --from=build /usr /usr
-RUN mkdir ~/.bitcoin
+RUN mkdir /root/.bitcoin
 
 EXPOSE 8332 8333 18332 18333
 
-ENTRYPOINT ["bitcoind", "--conf=~/bitcoin.conf", "--datadir=~/.bitcoin"]
+ENTRYPOINT ["bitcoind", "--conf=/root/bitcoin.conf", "--datadir=/root/.bitcoin"]
