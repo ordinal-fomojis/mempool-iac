@@ -51,11 +51,15 @@ jobs:
         run: terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
         working-directory: terraform
 
-      - name: Get Cluster Details
-        id: cluster-details
+      - name: Get Terrform Outputs
+        id: tf-outputs
         run: |
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
           echo "k8s_cluster_name=$(terraform output -raw k8s_cluster_name)" >> $GITHUB_OUTPUT
+
+          btc_rpc_password=$(terraform output -raw btc_rpc_password)
+          echo "::add-mask::$btc_rpc_password"
+          echo "btc_rpc_password=$btc_rpc_password" >> "$GITHUB_OUTPUT"
         working-directory: terraform
 
       - name: Set up kubelogin for non-interactive login
@@ -66,10 +70,30 @@ jobs:
       - name: Get K8s context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: ${{ steps.cluster-details.outputs.rg_name }}
-          cluster-name: ${{ steps.cluster-details.outputs.k8s_cluster_name }}
+          resource-group: ${{ steps.tf-outputs.outputs.rg_name }}
+          cluster-name: ${{ steps.tf-outputs.outputs.k8s_cluster_name }}
           admin: 'false'
           use-kubelogin: 'true'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Create Secret Manifest
+        run: |
+          pip install -r scripts/requirements.txt
+          python scripts/update-image-tag.py
+        env:
+          NAME: bitcoin-rpc-password
+          USERNAME: admin
+          SECRET: ${{ steps.tf-outputs.outputs.btc_rpc_password }}
+          FILE_PATH: k8s/bitcoin/secret.yaml
+
+      - name: Deploy Setup Manifests
+        run: |
+          kubectl apply -f k8s/bitcoin/secret.yaml
+          kubectl apply -f k8s/bitcoin/bitcoin-conf.yaml
 
       - name: Deploy Testnet
         run: kubectl apply -f k8s/bitcoin/testnet.yaml
