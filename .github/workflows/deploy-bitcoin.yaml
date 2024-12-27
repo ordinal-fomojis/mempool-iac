@@ -83,7 +83,7 @@ jobs:
       - name: Create Secret Manifest
         run: |
           pip install -r scripts/requirements.txt
-          python scripts/update-image-tag.py
+          python scripts/create-kube-basic-auth-secret.py
         env:
           NAME: bitcoin-rpc-password
           USERNAME: admin
