@@ -28,7 +28,7 @@ spec:
         app: bitcoin
     spec:
       containers:
-      - image: vxeumregistry.azurecr.io/bitcoin:0058c1edeafa50afde9057caaf91e1158da4d634
+      - image: vxeumregistry.azurecr.io/bitcoin:a2ce3d761c79c4cef15815794e90100a77f42166
         name: bitcoin
         volumeMounts:
         - mountPath: /root/.bitcoin
