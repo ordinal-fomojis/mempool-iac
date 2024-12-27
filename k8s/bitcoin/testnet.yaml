@@ -5,9 +5,9 @@ metadata:
 spec:
   ports:
   - nodePort: 30001
-    port: 18332
+    port: 48332
     protocol: TCP
-    targetPort: 18332
+    targetPort: 48332
   selector:
     app: bitcoin-testnet
   type: LoadBalancer

@@ -7,3 +7,10 @@ data:
     prune=0
     txindex=1
     server=1
+    rpcallowip=0.0.0.0/0
+
+    [main]
+    rpcbind=0.0.0.0
+
+    [testnet4]
+    rpcbind=0.0.0.0
