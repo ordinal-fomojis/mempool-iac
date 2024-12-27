@@ -16,10 +16,9 @@ def main():
         'metadata': {
             'name': NAME
         },
-        'type': 'kubernetes.io/basic-auth',
         'stringData': {
-            'username': USERNAME,
-            'password': SECRET
+            'BITCOIN_RPC_USERNAME': USERNAME,
+            'BITCOIN_RPC_PASSWORD': SECRET
         }
     }
     with open(FILE_PATH, 'w') as f:
