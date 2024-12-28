@@ -38,7 +38,7 @@ spec:
         envFrom:
         - secretRef:
             name: bitcoin-rpc-password
-        image: lqoscregistry.azurecr.io/bitcoin:2961e4a2f4f3ccfa36e3288029c92e31d2c4a5b3
+        image: lqoscregistry.azurecr.io/bitcoin:a79a002029f749475b16b54c27225b6159736698
         name: bitcoin-testnet
         volumeMounts:
         - mountPath: /root/.bitcoin
