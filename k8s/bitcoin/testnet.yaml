@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bitcoin-testnet
+  name: bitcoin-testnet-service
 spec:
   ports:
   - nodePort: 30001
@@ -9,23 +9,26 @@ spec:
     protocol: TCP
     targetPort: 48332
   selector:
-    app: bitcoin-testnet
+    app: bitcoin
+    network: testnet
   type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: bitcoin-testnet
+  name: bitcoin-testnet-set
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bitcoin-testnet
-  serviceName: bitcoin-testnet
+      app: bitcoin
+      network: testnet
+  serviceName: bitcoin-testnet-service
   template:
     metadata:
       labels:
-        app: bitcoin-testnet
+        app: bitcoin
+        network: testnet
     spec:
       containers:
       - args: ["-testnet4", "-rpcuser=$(BITCOIN_RPC_USERNAME)", "-rpcpassword=$(BITCOIN_RPC_PASSWORD)"]
@@ -36,7 +39,7 @@ spec:
             name: bitcoin-rpc-password
         volumeMounts:
         - mountPath: /root/.bitcoin
-          name: bitcoin-testnet
+          name: datadir
         - mountPath: /root
           name: bitcoin-conf
           readOnly: true
@@ -47,7 +50,7 @@ spec:
         name: bitcoin-conf
   volumeClaimTemplates:
   - metadata:
-      name: bitcoin-testnet
+      name: datadir
     spec:
       accessModes:
       - ReadWriteOnce
