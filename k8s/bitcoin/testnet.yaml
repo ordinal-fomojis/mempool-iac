@@ -16,7 +16,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: bitcoin-testnet-set
+  name: bitcoin-testnet
 spec:
   replicas: 1
   selector:
@@ -39,7 +39,7 @@ spec:
         - secretRef:
             name: bitcoin-rpc-password
         image: lqoscregistry.azurecr.io/bitcoin:a79a002029f749475b16b54c27225b6159736698
-        name: bitcoin-testnet
+        name: bitcoin-node
         volumeMounts:
         - mountPath: /root/.bitcoin
           name: datadir
