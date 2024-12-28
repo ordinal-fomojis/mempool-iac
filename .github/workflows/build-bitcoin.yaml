@@ -78,6 +78,7 @@ jobs:
           IMAGE: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
         
       - name: Create Pull Request
+        id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: '[Bot] Update bitcoin image'
@@ -85,3 +86,6 @@ jobs:
           title: '[Bot] Update bitcoin image'
           add-paths: 'k8s/bitcoin/*.yaml'
           draft: always-true
+          
+      - name: Enable Pull Request Automerge
+        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
