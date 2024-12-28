@@ -87,7 +87,7 @@ jobs:
           add-paths: 'k8s/bitcoin/*.yaml'
           draft: always-true
           
-      - name: Enable Pull Request Automerge
-        run: gh pr merge --squash --auto "${{ steps.create_pr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # - name: Enable Pull Request Automerge
+      #   run: gh pr merge --squash --auto "${{ steps.create_pr.outputs.pull-request-number }}"
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}

@@ -4,14 +4,12 @@ metadata:
   name: bitcoin-testnet-service
 spec:
   ports:
-  - nodePort: 30001
-    port: 48332
+  - port: 48332
     protocol: TCP
     targetPort: 48332
   selector:
     app: bitcoin
     network: testnet
-  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: StatefulSet
