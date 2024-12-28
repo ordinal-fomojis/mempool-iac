@@ -44,10 +44,11 @@ resource "random_pet" "aks_cluster_dns_prefix" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = random_pet.aks_cluster_name.id
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = random_pet.aks_cluster_dns_prefix.id
+  name                  = random_pet.aks_cluster_name.id
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  dns_prefix            = random_pet.aks_cluster_dns_prefix.id
+  cost_analysis_enabled = true
 
   default_node_pool {
     name       = "default"
