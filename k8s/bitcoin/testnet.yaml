@@ -31,12 +31,15 @@ spec:
         network: testnet
     spec:
       containers:
-      - args: ["-testnet4", "-rpcuser=$(BITCOIN_RPC_USERNAME)", "-rpcpassword=$(BITCOIN_RPC_PASSWORD)"]
-        image: vxeumregistry.azurecr.io/bitcoin:5405439b253ca3b7ca0544edb012e9d33d617a70
-        name: bitcoin-testnet
+      - args:
+        - -testnet4
+        - -rpcuser=$(BITCOIN_RPC_USERNAME)
+        - -rpcpassword=$(BITCOIN_RPC_PASSWORD)
         envFrom:
         - secretRef:
             name: bitcoin-rpc-password
+        image: lqoscregistry.azurecr.io/bitcoin:2961e4a2f4f3ccfa36e3288029c92e31d2c4a5b3
+        name: bitcoin-testnet
         volumeMounts:
         - mountPath: /root/.bitcoin
           name: datadir
