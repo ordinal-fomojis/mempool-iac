@@ -1,10 +1,10 @@
-name: Deploy Bitcoin
+name: Deploy Application
 on:
   push:
     branches:
       - main
     paths:
-      - 'k8s/bitcoin/*.yaml'
+      - 'k8s/**/*.yaml'
   workflow_dispatch:
     inputs:
       environment:
@@ -96,7 +96,9 @@ jobs:
           kubectl apply -f k8s/bitcoin/bitcoin-conf.yaml
 
       - name: Deploy Testnet
-        run: kubectl apply -f k8s/bitcoin/testnet.yaml
+        run: |
+          kubectl apply -f k8s/bitcoin/testnet.yaml
+          kubectl apply -f k8s/mempool/testnet.yaml
 
       - name: Await Approval
         if: ${{ env.ENVIRONMENT == 'prod' }}
