@@ -84,3 +84,4 @@ jobs:
           branch: update-bitcoin-image
           title: '[Bot] Update bitcoin image'
           add-paths: 'k8s/bitcoin/*.yaml'
+          draft: always-true
