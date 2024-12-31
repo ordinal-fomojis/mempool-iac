@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bitcoin
+description: A Helm chart for mempool.space API and Bitcoin Node
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -75,30 +75,33 @@ jobs:
           admin: 'false'
           use-kubelogin: 'true'
       
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: Create Secret Manifest
-        run: |
-          pip install -r scripts/requirements.txt
-          python scripts/create-kube-rpc-password.py
-        env:
-          NAME: bitcoin-rpc-password
-          USERNAME: admin
-          SECRET: ${{ steps.tf-outputs.outputs.btc_rpc_password }}
-          FILE_PATH: k8s/bitcoin/secret.yaml
-
-      - name: Deploy Setup Manifests
-        run: |
-          kubectl apply -f k8s/bitcoin/secret.yaml
-          kubectl apply -f k8s/bitcoin/bitcoin-conf.yaml
-
       - name: Deploy Testnet
-        run: |
-          kubectl apply -f k8s/bitcoin/testnet.yaml
-          kubectl apply -f k8s/mempool/testnet.yaml
+        run: helm upgrade --install testnet helm/bitcoin -f helm/bitcoin/environments/testnet.yaml
+
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.13'
+
+      # - name: Create Secret Manifest
+      #   run: |
+      #     pip install -r scripts/requirements.txt
+      #     python scripts/create-kube-rpc-password.py
+      #   env:
+      #     NAME: bitcoin-rpc-password
+      #     USERNAME: admin
+      #     SECRET: ${{ steps.tf-outputs.outputs.btc_rpc_password }}
+      #     FILE_PATH: k8s/bitcoin/secret.yaml
+
+      # - name: Deploy Setup Manifests
+      #   run: |
+      #     kubectl apply -f k8s/bitcoin/secret.yaml
+      #     kubectl apply -f k8s/bitcoin/bitcoin-conf.yaml
+
+      # - name: Deploy Testnet
+      #   run: |
+      #     kubectl apply -f k8s/bitcoin/testnet.yaml
+      #     kubectl apply -f k8s/mempool/testnet.yaml
 
       - name: Await Approval
         if: ${{ env.ENVIRONMENT == 'prod' }}
@@ -110,4 +113,6 @@ jobs:
           issue-body: "Do you want to deploy mainnet?"
       
       - name: Deploy Mainnet
-        run: kubectl apply -f k8s/bitcoin/mainnet.yaml
+        run: helm upgrade --install testnet helm/bitcoin -f helm/bitcoin/environments/mainnet.yaml
+      # - name: Deploy Mainnet
+      #   run: kubectl apply -f k8s/bitcoin/mainnet.yaml

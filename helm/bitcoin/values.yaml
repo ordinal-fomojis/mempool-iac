@@ -1,0 +1,3 @@
+bitcoinReplicaCount: 1
+# One of main, test, testnet4, signet or regtest
+chain: main
