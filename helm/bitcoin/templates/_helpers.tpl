@@ -1,14 +1,14 @@
 {{/* Port of RPC connections for the bitcoin node. */}}
 {{- define "bitcoin.rpcPort" -}}
-{{- if .Values.chain | eq "main" -}}
+{{- if .chain | eq "main" -}}
 {{ 8332 }}
-{{- else if .Values.chain | eq "test" -}}
+{{- else if .chain | eq "test" -}}
 {{ 18332 }}
-{{- else if .Values.chain | eq "regtest" -}}
+{{- else if .chain | eq "regtest" -}}
 {{ 18443 }}
-{{- else if .Values.chain | eq "signet" -}}
+{{- else if .chain | eq "signet" -}}
 {{ 38332 }}
-{{- else if .Values.chain | eq "testnet4" -}}
+{{- else if .chain | eq "testnet4" -}}
 {{ 48332 }}
 {{- else -}}
 {{ required "Invalid chain name" "" }}

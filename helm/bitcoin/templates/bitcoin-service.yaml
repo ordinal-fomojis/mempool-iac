@@ -1,12 +1,17 @@
+{{- range $name, $config := .Values.chains -}}
+{{- if $config.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-bitcoin-service
+  name: bitcoin-{{ $name }}-service
 spec:
   ports:
-  - port: {{ include "bitcoin.rpcPort" . }}
+  - port: {{ include "bitcoin.rpcPort" $config }}
     protocol: TCP
-    targetPort: {{ include "bitcoin.rpcPort" . }}
+    targetPort: {{ include "bitcoin.rpcPort" $config }}
   selector:
     app: bitcoin
-    release: {{ .Release.Name }}
+    chain: {{ $config.chain }}
+---
+{{- end -}}
+{{- end -}}

@@ -84,6 +84,12 @@ resource "azurerm_role_assignment" "acr_role" {
   skip_service_principal_aad_check = true
 }
 
-resource "random_password" "btc-rpc-password" {
+############ Passwords ############
+
+resource "random_password" "mainnet-rpc-password" {
+  length = 32
+}
+
+resource "random_password" "testnet-rpc-password" {
   length = 32
 }

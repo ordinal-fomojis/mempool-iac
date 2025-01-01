@@ -47,19 +47,26 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform Init
-        run: terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
-        working-directory: terraform
-
       - name: Get Terrform Outputs
         id: tf-outputs
         run: |
+          terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
           echo "k8s_cluster_name=$(terraform output -raw k8s_cluster_name)" >> $GITHUB_OUTPUT
+          acr_name=$(terraform output -raw acr_name)
+          echo "acr_name=$acr_name" >> $GITHUB_OUTPUT
 
-          btc_rpc_password=$(terraform output -raw btc_rpc_password)
-          echo "::add-mask::$btc_rpc_password"
-          echo "btc_rpc_password=$btc_rpc_password" >> "$GITHUB_OUTPUT"
+          mainnet_rpc_password=$(terraform output -raw mainnet_rpc_password)
+          echo "::add-mask::$mainnet_rpc_password"
+          echo "mainnet_rpc_password=$mainnet_rpc_password" >> "$GITHUB_OUTPUT"
+
+          testnet_rpc_password=$(terraform output -raw testnet_rpc_password)
+          echo "::add-mask::$testnet_rpc_password"
+          echo "testnet_rpc_password=$testnet_rpc_password" >> "$GITHUB_OUTPUT"
+
+          image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
+            --orderby time_desc --top 1 --output tsv)
+          echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Set up kubelogin for non-interactive login
@@ -113,6 +120,11 @@ jobs:
           issue-body: "Do you want to deploy mainnet?"
       
       - name: Deploy Mainnet
-        run: helm upgrade --install testnet helm/bitcoin -f helm/bitcoin/environments/mainnet.yaml
+        run: helm upgrade --install testnet helm/bitcoin \
+          --set acrName=${{ steps.tf-outputs.outputs.acr_name }} \
+          --set bitcoinImageTag=${{ steps.tf-outputs.outputs.image_tag }} \
+          --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
+          --set chains.testnet.rpcPassword=${{ steps.tf-outputs.outputs.testnet_rpc_password }} \
+          --set chains.mainnet.rpcPassword=${{ steps.tf-outputs.outputs.mainnet_rpc_password }}
       # - name: Deploy Mainnet
       #   run: kubectl apply -f k8s/bitcoin/mainnet.yaml

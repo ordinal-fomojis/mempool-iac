@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-bitcoin-conf
+  name: bitcoin-conf
 data:
   bitcoin.conf: |
     prune=0

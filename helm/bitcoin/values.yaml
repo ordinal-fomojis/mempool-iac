@@ -1,3 +1,18 @@
-bitcoinReplicaCount: 1
-# One of main, test, testnet4, signet or regtest
-chain: main
+acrName: acr-name
+bitcoinImageTag: tag
+
+chains:
+  mainnet:
+    enabled: false
+    chain: main
+    rpcUser: admin
+    rpcPassword: null
+    bitcoinStorage: 1Ti
+    bitcoinNodeReplicas: 1
+  testnet:
+    enabled: true
+    chain: testnet4
+    rpcUser: admin
+    rpcPassword: null
+    bitcoinStorage: 100Gi
+    bitcoinNodeReplicas: 1

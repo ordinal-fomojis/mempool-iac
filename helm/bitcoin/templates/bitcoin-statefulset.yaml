@@ -1,0 +1,50 @@
+{{- range $name, $config := .Values.chains -}}
+{{- if $config.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bitcoin-{{ $name }}
+spec:
+  replicas: {{ $config.bitcoinNodeReplicas }}
+  selector:
+    matchLabels:
+      app: bitcoin
+      chain: {{ $config.chain }}
+  serviceName: bitcoin-{{ $name }}-service
+  template:
+    metadata:
+      labels:
+        app: bitcoin
+        chain: {{ $config.chain }}
+    spec:
+      containers:
+      - args:
+        - -chain={{ $config.chain }}
+        - -rpcuser={{ $config.rpcUser }}
+        - -rpcpassword={{ $config.rpcPassword }}
+        image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}s
+        name: bitcoin-node
+        volumeMounts:
+        - mountPath: /root/.bitcoin
+          name: datadir
+        - mountPath: /root
+          name: bitcoin-conf
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - configMap:
+          name: bitcoin-conf
+        name: bitcoin-conf
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ $config.bitcoinStorage }}
+      storageClassName: managed
+---
+{{- end -}}
+{{- end -}}
