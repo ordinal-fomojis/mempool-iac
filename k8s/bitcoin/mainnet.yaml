@@ -28,7 +28,7 @@ spec:
         app: bitcoin
     spec:
       containers:
-      - image: lqoscregistry.azurecr.io/bitcoin:68b6a0892d0d2cc289eb629340abb36bcc6cfae5
+      - image: jjvjwregistry.azurecr.io/bitcoin:71ae1d93dca869576d1e701bc3633cdf3a3b3204
         name: bitcoin
         volumeMounts:
         - mountPath: /root/.bitcoin
