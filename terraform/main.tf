@@ -48,7 +48,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = random_pet.aks_cluster_dns_prefix.id
+  
   oidc_issuer_enabled = true
+
+  ingress_application_gateway {
+    gateway_name = "appgw"
+  }
 
   default_node_pool {
     name       = "default"
@@ -118,3 +123,10 @@ resource "azurerm_federated_identity_credential" "alb-identity" {
   parent_id           = azurerm_user_assigned_identity.alb-identity.id
   subject             = "system:serviceaccount:azure-alb-system:alb-controller-sa"
 }
+
+# resource "azurerm_role_assignment" "agic-addon-identity" {
+#   principal_id                     = 
+#   role_definition_name             = "Network Contributor"
+#   scope                            = azurerm_kubernetes_cluster.aks.ingress_application_gateway[0].subnet_cidr
+#   skip_service_principal_aad_check = true
+# }
