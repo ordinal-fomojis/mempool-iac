@@ -52,7 +52,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name       = "default"
-    node_count = 2
+    node_count = var.nodes
     vm_size    = "Standard_D2ps_v6"
   }
 
@@ -106,7 +106,7 @@ resource "azurerm_user_assigned_identity" "alb-identity" {
 resource "azurerm_role_assignment" "alb-role" {
   principal_id                     = azurerm_user_assigned_identity.alb-identity.principal_id
   role_definition_name             = "Reader"
-  scope                            = azurerm_resource_group.rg.id
+  scope                            = azurerm_kubernetes_cluster.aks.node_resource_group_id
   skip_service_principal_aad_check = true
 }
 
