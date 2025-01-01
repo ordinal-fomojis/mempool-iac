@@ -22,7 +22,7 @@ spec:
         - -chain={{ $config.chain }}
         - -rpcuser={{ $config.rpcUser }}
         - -rpcpassword={{ $config.rpcPassword }}
-        image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}s
+        image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}
         name: bitcoin-node
         volumeMounts:
         - mountPath: /root/.bitcoin
