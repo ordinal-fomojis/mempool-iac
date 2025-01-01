@@ -20,7 +20,12 @@ output "acr_name" {
   value = azurerm_container_registry.acr.name
 }
 
-output "btc_rpc_password" {
-  value     = random_password.btc-rpc-password.result
+output "mainnet_rpc_password" {
+  value     = random_password.mainnet-rpc-password.result
+  sensitive = true
+}
+
+output "testnet_rpc_password" {
+  value     = random_password.testnet-rpc-password.result
   sensitive = true
 }
