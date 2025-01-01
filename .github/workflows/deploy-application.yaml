@@ -83,9 +83,10 @@ jobs:
           use-kubelogin: 'true'
       
       - name: Deploy Mainnet
-        run: helm upgrade --install testnet helm/bitcoin \
-          --set acrName=${{ steps.tf-outputs.outputs.acr_name }} \
-          --set bitcoinImageTag=${{ steps.tf-outputs.outputs.image_tag }} \
-          --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
-          --set chains.testnet.rpcPassword=${{ steps.tf-outputs.outputs.testnet_rpc_password }} \
-          --set chains.mainnet.rpcPassword=${{ steps.tf-outputs.outputs.mainnet_rpc_password }}
+        run: |
+          helm upgrade --install bitcoin helm/bitcoin \
+            --set acrName=${{ steps.tf-outputs.outputs.acr_name }} \
+            --set bitcoinImageTag=${{ steps.tf-outputs.outputs.image_tag }} \
+            --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
+            --set chains.testnet.rpcPassword=${{ steps.tf-outputs.outputs.testnet_rpc_password }} \
+            --set chains.mainnet.rpcPassword=${{ steps.tf-outputs.outputs.mainnet_rpc_password }}
