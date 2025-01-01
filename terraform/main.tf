@@ -93,3 +93,27 @@ resource "random_password" "mainnet-rpc-password" {
 resource "random_password" "testnet-rpc-password" {
   length = 32
 }
+
+############ Load Balancer ############
+
+resource "azurerm_user_assigned_identity" "alb-identity" {
+  location            = azurerm_resource_group.rg.location
+  name                = "alb-identity"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_role_assignment" "alb-role" {
+  principal_id                     = azurerm_user_assigned_identity.alb-identity.principal_id
+  role_definition_name             = "Reader"
+  scope                            = azurerm_resource_group.rg.id
+  skip_service_principal_aad_check = true
+}
+
+resource "azurerm_federated_identity_credential" "alb-identity" {
+  name                = "azure-alb-identity"
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = []
+  issuer              = azurerm_kubernetes_cluster.aks.oidc_issuer_url
+  parent_id           = azurerm_user_assigned_identity.alb-identity.id
+  subject             = "system:serviceaccount:azure-alb-system:alb-controller-sa"
+}

@@ -52,7 +52,7 @@ jobs:
         run: |
           terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
-          echo "k8s_cluster_name=$(terraform output -raw k8s_cluster_name)" >> $GITHUB_OUTPUT
+          echo "kube_cluster_name=$(terraform output -raw kube_cluster_name)" >> $GITHUB_OUTPUT
           acr_name=$(terraform output -raw acr_name)
           echo "acr_name=$acr_name" >> $GITHUB_OUTPUT
 
@@ -74,11 +74,11 @@ jobs:
         with:
           kubelogin-version: 'v0.0.25'
           
-      - name: Get K8s context
+      - name: Get Kube Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ steps.tf-outputs.outputs.rg_name }}
-          cluster-name: ${{ steps.tf-outputs.outputs.k8s_cluster_name }}
+          cluster-name: ${{ steps.tf-outputs.outputs.kube_cluster_name }}
           admin: 'false'
           use-kubelogin: 'true'
       

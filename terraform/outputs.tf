@@ -1,14 +1,4 @@
-output "client_certificate" {
-  value     = azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate
-  sensitive = true
-}
-
-output "kube_config" {
-  value     = azurerm_kubernetes_cluster.aks.kube_config_raw
-  sensitive = true
-}
-
-output "k8s_cluster_name" {
+output "kube_cluster_name" {
   value = azurerm_kubernetes_cluster.aks.name
 }
 
@@ -28,4 +18,8 @@ output "mainnet_rpc_password" {
 output "testnet_rpc_password" {
   value     = random_password.testnet-rpc-password.result
   sensitive = true
+}
+
+output "alb_client_id" {
+  value = azurerm_user_assigned_identity.alb-identity.client_id
 }
