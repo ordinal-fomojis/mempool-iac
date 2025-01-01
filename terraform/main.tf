@@ -112,7 +112,7 @@ resource "azurerm_role_assignment" "alb-role" {
 resource "azurerm_federated_identity_credential" "alb-identity" {
   name                = "azure-alb-identity"
   resource_group_name = azurerm_resource_group.rg.name
-  audience            = []
+  audience            = ["api://AzureADTokenExchange"]
   issuer              = azurerm_kubernetes_cluster.aks.oidc_issuer_url
   parent_id           = azurerm_user_assigned_identity.alb-identity.id
   subject             = "system:serviceaccount:azure-alb-system:alb-controller-sa"
