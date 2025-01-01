@@ -1,2 +1,2 @@
 rg_name = "mempool-prod"
-nodes=3
+nodes   = 3
