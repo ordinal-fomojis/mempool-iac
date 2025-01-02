@@ -48,11 +48,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = random_pet.aks_cluster_dns_prefix.id
-  
   oidc_issuer_enabled = true
 
+  network_profile {
+    network_plugin = "azure"
+  }
+  
   ingress_application_gateway {
     gateway_name = "appgw"
+    subnet_cidr  = "10.225.0.0/16"
   }
 
   default_node_pool {
