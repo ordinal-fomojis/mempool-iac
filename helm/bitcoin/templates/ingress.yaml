@@ -5,12 +5,12 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
-        paths:
-          - pathType: Prefix
-            backend:
-              service:
-                name: bitcoin-testnet-service
-                port:
-                  number: 48332
-            path: /
+  - http:
+    paths:
+    - pathType: Prefix
+      backend:
+        service:
+          name: bitcoin-testnet-service
+          port:
+            number: 48332
+      path: /
