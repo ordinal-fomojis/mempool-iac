@@ -1,0 +1,60 @@
+{{- range $name, $config := .Values.chains -}}
+{{- if $config.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mempool-{{ $name }}
+spec:
+  replicas: {{ $config.mempoolReplicas }}
+  selector:
+    matchLabels:
+      app: mempool
+      chain: {{ $config.chain }}
+  serviceName: mempool-{{ $name }}-service
+  template:
+    metadata:
+      labels:
+        app: mempool
+        chain: {{ $config.chain }}
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mariadb
+        image: mariadb:10.5.21
+        envFrom:
+        - configMapRef:
+            name: db-config
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db
+      - name: mempool
+        image: mempool/backend:v3.0.1
+        command: ["./wait-for-it.sh", "localhost:3306", "--timeout=720", "--strict", "--", "./start.sh"]
+        envFrom:
+        - configMapRef:
+            name: mempool-config
+        volumeMounts:
+        - mountPath: /backend/cache
+          name: cache
+  volumeClaimTemplates:
+  - metadata:
+      name: db
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: managed
+  - metadata:
+      name: cache
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: managed
+---
+{{- end -}}
+{{- end -}}

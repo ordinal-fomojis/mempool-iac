@@ -4,8 +4,6 @@
 {{ 8332 }}
 {{- else if .chain | eq "test" -}}
 {{ 18332 }}
-{{- else if .chain | eq "regtest" -}}
-{{ 18443 }}
 {{- else if .chain | eq "signet" -}}
 {{ 38332 }}
 {{- else if .chain | eq "testnet4" -}}
@@ -15,7 +13,20 @@
 {{- end -}}
 {{- end -}}
 
-
+{{/* Network to be used in mempool config. */}}
+{{- define "bitcoin.mempoolNetwork" -}}
+{{- if .chain | eq "main" -}}
+{{ mainnet }}
+{{- else if .chain | eq "test" -}}
+{{ testnet }}
+{{- else if .chain | eq "signet" -}}
+{{ signet }}
+{{- else if .chain | eq "testnet4" -}}
+{{ testnet }}
+{{- else -}}
+{{ required "Invalid chain name" "" }}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Expand the name of the chart.

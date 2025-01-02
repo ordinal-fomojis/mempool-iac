@@ -1,0 +1,32 @@
+{{- range $name, $config := .Values.chains -}}
+{{- if $config.enabled -}}
+{{- $dbName := "mempool" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  MARIADB_DATABASE: {{ $dbName }}
+  MARIADB_USER: {{ $config.dbUser }}
+  MARIADB_PASSWORD: {{ $config.dbPassword }}
+  MARIADB_ROOT_PASSWORD: {{ $config.dbRootPassword }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mempool-{{ $name }}-config
+data:
+  MEMPOOL_BACKEND: none
+  CORE_RPC_HOST: bitcoin-{{ $name }}-service
+  CORE_RPC_PORT: "{{ include "bitcoin.rpcPort" $config }}"
+  DATABASE_ENABLED: "true"
+  DATABASE_HOST: localhost
+  MEMPOOL_NETWORK: {{ include "bitcoin.mempoolNetwork" $config }}
+  CORE_RPC_USERNAME: {{ $config.rpcUser }}
+  CORE_RPC_PASSWORD: {{ $config.rpcPassword }}
+  DATABASE_DATABASE: {{ $dbName }}
+  DATABASE_USERNAME: {{ $config.dbUser }}
+  DATABASE_PASSWORD: {{ $config.dbPassword }}
+---
+{{- end -}}
+{{- end -}}

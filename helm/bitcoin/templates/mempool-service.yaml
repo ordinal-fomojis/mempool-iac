@@ -1,0 +1,17 @@
+{{- range $name, $config := .Values.chains -}}
+{{- if $config.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mempool-{{ $name }}-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8999
+    protocol: TCP
+    targetPort: 8999
+  selector:
+    app: mempool
+    chain: {{ $config.chain }}
+{{- end -}}
+{{- end -}}

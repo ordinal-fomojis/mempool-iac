@@ -7,12 +7,20 @@ chains:
     chain: main
     rpcUser: admin
     rpcPassword: null
+    dbUser: mempool
+    dbPassword: null
+    dbRootPassword: null
     bitcoinStorage: 1Ti
     bitcoinNodeReplicas: 1
+    mempoolReplicas: 3
   testnet:
     enabled: true
     chain: testnet4
     rpcUser: admin
     rpcPassword: null
+    dbUser: mempool
+    dbPassword: null
+    dbRootPassword: null
     bitcoinStorage: 100Gi
     bitcoinNodeReplicas: 1
+    mempoolReplicas: 1

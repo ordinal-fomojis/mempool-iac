@@ -53,20 +53,6 @@ jobs:
           terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
           echo "kube_cluster_name=$(terraform output -raw kube_cluster_name)" >> $GITHUB_OUTPUT
-          acr_name=$(terraform output -raw acr_name)
-          echo "acr_name=$acr_name" >> $GITHUB_OUTPUT
-
-          mainnet_rpc_password=$(terraform output -raw mainnet_rpc_password)
-          echo "::add-mask::$mainnet_rpc_password"
-          echo "mainnet_rpc_password=$mainnet_rpc_password" >> "$GITHUB_OUTPUT"
-
-          testnet_rpc_password=$(terraform output -raw testnet_rpc_password)
-          echo "::add-mask::$testnet_rpc_password"
-          echo "testnet_rpc_password=$testnet_rpc_password" >> "$GITHUB_OUTPUT"
-
-          image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
-            --orderby time_desc --top 1 --output tsv)
-          echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Set up kubelogin for non-interactive login
@@ -84,9 +70,16 @@ jobs:
       
       - name: Deploy Mainnet
         run: |
+          image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
+            --orderby time_desc --top 1 --output tsv)
+          $passwords=$(terraform output -json passwords)
           helm upgrade --install bitcoin helm/bitcoin \
-            --set acrName=${{ steps.tf-outputs.outputs.acr_name }} \
-            --set bitcoinImageTag=${{ steps.tf-outputs.outputs.image_tag }} \
+            --set acrName=$(terraform output -raw acr_name) \
+            --set bitcoinImageTag=$image_tag \
             --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
-            --set chains.testnet.rpcPassword="${{ steps.tf-outputs.outputs.testnet_rpc_password }}" \
-            --set chains.mainnet.rpcPassword="${{ steps.tf-outputs.outputs.mainnet_rpc_password }}"
+            --set chains.testnet.rpcPassword="$($passwords | jq -r '."testnet-rpc"')" \
+            --set chains.mainnet.rpcPassword="$($passwords | jq -r '."mainnet-rpc"')" \
+            --set chains.testnet.dbPassword="$($passwords | jq -r '."testnet-db"')" \
+            --set chains.mainnet.dbPassword="$($passwords | jq -r '."testnet-db"')" \
+            --set chains.testnet.dbRootPassword="$($passwords | jq -r '."testnet-db-root"')" \
+            --set chains.mainnet.dbRootPassword="$($passwords | jq -r '."testnet-db-root"')"
