@@ -2,6 +2,7 @@
 {{- if $config.enabled -}}
 apiVersion: v1
 kind: Service
+type: LoadBalancer
 metadata:
   name: bitcoin-{{ $name }}-service
 spec:
