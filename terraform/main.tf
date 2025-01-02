@@ -53,7 +53,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     network_plugin = "azure"
   }
-  
+
   ingress_application_gateway {
     gateway_name = "appgw"
     subnet_cidr  = "10.225.0.0/16"
