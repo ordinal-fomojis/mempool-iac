@@ -97,11 +97,13 @@ resource "azurerm_role_assignment" "acr_role" {
 ############ Passwords ############
 
 resource "random_password" "mainnet-rpc-password" {
-  length = 32
+  length  = 32
+  special = false
 }
 
 resource "random_password" "testnet-rpc-password" {
-  length = 32
+  length  = 32
+  special = false
 }
 
 ############ Load Balancer ############
