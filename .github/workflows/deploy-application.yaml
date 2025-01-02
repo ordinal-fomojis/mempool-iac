@@ -70,11 +70,12 @@ jobs:
       
       - name: Deploy Mainnet
         run: |
+          acr_name=$(terraform output -raw acr_name)
           image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
             --orderby time_desc --top 1 --output tsv)
           $passwords=$(terraform output -json passwords)
           helm upgrade --install bitcoin helm/bitcoin \
-            --set acrName=$(terraform output -raw acr_name) \
+            --set acrName=$acr_name \
             --set bitcoinImageTag=$image_tag \
             --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
             --set chains.testnet.rpcPassword="$($passwords | jq -r '."testnet-rpc"')" \
