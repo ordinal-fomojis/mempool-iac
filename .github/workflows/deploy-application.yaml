@@ -78,10 +78,10 @@ jobs:
             --set acrName=$acr_name \
             --set bitcoinImageTag=$image_tag \
             --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
-            --set chains.testnet.rpcPassword="$($passwords | jq -r '."testnet-rpc"')" \
-            --set chains.mainnet.rpcPassword="$($passwords | jq -r '."mainnet-rpc"')" \
-            --set chains.testnet.dbPassword="$($passwords | jq -r '."testnet-db"')" \
-            --set chains.mainnet.dbPassword="$($passwords | jq -r '."testnet-db"')" \
-            --set chains.testnet.dbRootPassword="$($passwords | jq -r '."testnet-db-root"')" \
-            --set chains.mainnet.dbRootPassword="$($passwords | jq -r '."testnet-db-root"')"
+            --set chains.testnet.rpcPassword="$(echo $passwords | jq -r '."testnet-rpc"')" \
+            --set chains.mainnet.rpcPassword="$(echo $passwords | jq -r '."mainnet-rpc"')" \
+            --set chains.testnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
+            --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
+            --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
+            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')"
         working-directory: terraform
