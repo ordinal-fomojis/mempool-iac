@@ -81,7 +81,7 @@ jobs:
             --set chains.testnet.rpcPassword="$(echo $passwords | jq -r '."testnet-rpc"')" \
             --set chains.mainnet.rpcPassword="$(echo $passwords | jq -r '."mainnet-rpc"')" \
             --set chains.testnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
-            --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
+            --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."mainnet-db"')" \
             --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
-            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')"
+            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')"
         working-directory: terraform
