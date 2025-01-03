@@ -23,7 +23,7 @@ spec:
         image: mariadb:10.5.21
         envFrom:
         - configMapRef:
-            name: db-config
+            name: db-{{ $name }}-config
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: db
@@ -32,7 +32,7 @@ spec:
         command: ["./wait-for-it.sh", "localhost:3306", "--timeout=720", "--strict", "--", "./start.sh"]
         envFrom:
         - configMapRef:
-            name: mempool-config
+            name: mempool-{{ $name }}-config
         volumeMounts:
         - mountPath: /backend/cache
           name: cache
