@@ -68,7 +68,7 @@ jobs:
           admin: 'false'
           use-kubelogin: 'true'
       
-      - name: Deploy Mainnet
+      - name: Deploy
         run: |
           acr_name=$(terraform output -raw acr_name)
           image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
