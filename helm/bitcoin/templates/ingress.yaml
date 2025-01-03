@@ -10,13 +10,13 @@ spec:
   rules:
   - http:
       paths:
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: bitcoin-testnet-service
-            port:
-              number: 48332
+      # - pathType: Prefix
+      #   path: /
+      #   backend:
+      #     service:
+      #       name: bitcoin-testnet-service
+      #       port:
+      #         number: 48332
       - pathType: Prefix
         path: /api/v1/
         backend:
