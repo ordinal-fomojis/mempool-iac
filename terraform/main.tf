@@ -39,25 +39,10 @@ resource "random_pet" "aks_cluster_name" {
   prefix = "cluster"
 }
 
-resource "random_pet" "aks_cluster_dns_prefix" {
-  prefix = "dns"
-}
-
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = random_pet.aks_cluster_name.id
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = random_pet.aks_cluster_dns_prefix.id
-  oidc_issuer_enabled = true
-
-  network_profile {
-    network_plugin = "azure"
-  }
-
-  ingress_application_gateway {
-    gateway_name = "appgw"
-    subnet_cidr  = "10.225.0.0/16"
-  }
 
   default_node_pool {
     name       = "default"
@@ -72,16 +57,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
 ############ Azure Container Registry ############
 
-resource "random_string" "acr_name" {
-  length  = 5
-  lower   = true
-  numeric = false
-  special = false
-  upper   = false
+resource "random_pet" "acr_name" {
+  prefix = "registry"
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "${random_string.acr_name.result}registry"
+  name                = random_pet.acr_name.id
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
@@ -107,34 +88,3 @@ resource "random_password" "passwords" {
   length   = 32
   special  = false
 }
-
-############ Load Balancer ############
-
-resource "azurerm_user_assigned_identity" "alb-identity" {
-  location            = azurerm_resource_group.rg.location
-  name                = "alb-identity"
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-resource "azurerm_role_assignment" "alb-role" {
-  principal_id                     = azurerm_user_assigned_identity.alb-identity.principal_id
-  role_definition_name             = "Reader"
-  scope                            = azurerm_kubernetes_cluster.aks.node_resource_group_id
-  skip_service_principal_aad_check = true
-}
-
-resource "azurerm_federated_identity_credential" "alb-identity" {
-  name                = "azure-alb-identity"
-  resource_group_name = azurerm_resource_group.rg.name
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = azurerm_kubernetes_cluster.aks.oidc_issuer_url
-  parent_id           = azurerm_user_assigned_identity.alb-identity.id
-  subject             = "system:serviceaccount:azure-alb-system:alb-controller-sa"
-}
-
-# resource "azurerm_role_assignment" "agic-addon-identity" {
-#   principal_id                     = 
-#   role_definition_name             = "Network Contributor"
-#   scope                            = azurerm_kubernetes_cluster.aks.ingress_application_gateway[0].subnet_cidr
-#   skip_service_principal_aad_check = true
-# }

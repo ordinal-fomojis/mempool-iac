@@ -5,7 +5,6 @@ kind: Service
 metadata:
   name: mempool-{{ $name }}-service
 spec:
-  type: LoadBalancer
   ports:
   - port: 8999
     protocol: TCP

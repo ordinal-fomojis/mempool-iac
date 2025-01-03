@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bitcoin-readiness-probe
+data:
+  readiness-probe.sh: |
+{{ .Files.Get "files/bitcoin-readiness-probe.sh" | indent 4 }}

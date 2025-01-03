@@ -16,7 +16,3 @@ output "passwords" {
   }
   sensitive = true
 }
-
-output "alb_client_id" {
-  value = azurerm_user_assigned_identity.alb-identity.client_id
-}

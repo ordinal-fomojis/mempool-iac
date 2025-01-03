@@ -5,7 +5,6 @@ kind: Service
 metadata:
   name: bitcoin-{{ $name }}-service
 spec:
-  type: LoadBalancer
   ports:
   - port: {{ include "bitcoin.rpcPort" $config }}
     protocol: TCP

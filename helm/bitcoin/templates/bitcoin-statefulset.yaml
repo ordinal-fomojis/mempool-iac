@@ -18,23 +18,33 @@ spec:
         chain: {{ $config.chain }}
     spec:
       containers:
-      - args:
+      - name: bitcoin-node
+        image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}
+        args:
         - -chain={{ $config.chain }}
         - -rpcuser={{ $config.rpcUser }}
         - "-rpcpassword={{ $config.rpcPassword }}"
-        image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}
-        name: bitcoin-node
         volumeMounts:
-        - mountPath: /root/.bitcoin
-          name: datadir
-        - mountPath: /root
-          name: bitcoin-conf
-          readOnly: true
+        - name: datadir
+          mountPath: /root/.bitcoin
+        - name: files
+          mountPath: /root
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - /root/readiness-probe.sh {{ $config.rpcUser }} {{ $config.rpcPassword }} {{ $config.chain }}
       restartPolicy: Always
       volumes:
-      - configMap:
-          name: bitcoin-conf
-        name: bitcoin-conf
+        - name: files
+          projected:
+            defaultMode: 0555
+            sources:
+            - configMap:
+                name: bitcoin-conf
+            - configMap:
+                name: bitcoin-readiness-probe
   volumeClaimTemplates:
   - metadata:
       name: datadir
