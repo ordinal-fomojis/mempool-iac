@@ -11,9 +11,16 @@ spec:
   - http:
     paths:
     - pathType: Prefix
+      path: /
       backend:
         service:
           name: bitcoin-testnet-service
           port:
             number: 48332
-      path: /
+    - pathType: Prefix
+      path: /api/v1/
+      backend:
+        service:
+          name: mempool-testnet-service
+          port:
+            number: 8999
