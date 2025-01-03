@@ -97,15 +97,15 @@ resource "azurerm_role_assignment" "acr_role" {
 ############ Passwords ############
 
 locals {
-  chains = ["testnet", "mainnet"]
+  chains         = ["testnet", "mainnet"]
   password_types = ["rpc", "db", "db-root"]
-  passwords = toset(flatten([for chain in local.chains : [for password_type in local.password_types : "${chain}-${password_type}"]]))
+  passwords      = toset(flatten([for chain in local.chains : [for password_type in local.password_types : "${chain}-${password_type}"]]))
 }
 
 resource "random_password" "passwords" {
   for_each = local.passwords
-  length  = 32
-  special = false
+  length   = 32
+  special  = false
 }
 
 ############ Load Balancer ############
