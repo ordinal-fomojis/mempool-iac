@@ -9,7 +9,7 @@
 {{- else if .chain | eq "testnet4" -}}
 {{ 48332 }}
 {{- else -}}
-{{ required "Invalid chain name" "" }}
+{{ fail "Invalid chain name" }}
 {{- end -}}
 {{- end -}}
 
@@ -24,6 +24,6 @@
 {{- else if .chain | eq "testnet4" -}}
 {{ "testnet" }}
 {{- else -}}
-{{ required "Invalid chain name" "" }}
+{{ fail "Invalid chain name" }}
 {{- end -}}
 {{- end -}}
