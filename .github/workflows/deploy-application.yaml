@@ -75,6 +75,7 @@ jobs:
             --orderby time_desc --top 1 --output tsv)
           passwords=$(terraform output -json passwords)
 
+          helm repo add kubernetes https://kubernetes.github.io/ingress-nginx
           helm dependency build ../helm/bitcoin
           helm upgrade --install bitcoin ../helm/bitcoin \
             --set acrName=$acr_name \
