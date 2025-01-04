@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-{{ $name }}-config
+  name: {{ include "bitcoin.dbConfigName" $config }}
 data:
   MARIADB_DATABASE: {{ $dbName }}
   MARIADB_USER: {{ $config.dbUser }}
@@ -14,10 +14,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mempool-{{ $name }}-config
+  name: {{ include "bitcoin.mempoolConfigName" $config }}
 data:
   MEMPOOL_BACKEND: none
-  CORE_RPC_HOST: bitcoin-{{ $name }}-service
+  CORE_RPC_HOST: {{ include "bitcoin.bitcoinServiceName" $config }}
   CORE_RPC_PORT: "{{ include "bitcoin.rpcPort" $config }}"
   DATABASE_ENABLED: "true"
   DATABASE_HOST: localhost

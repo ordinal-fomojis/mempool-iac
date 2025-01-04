@@ -3,14 +3,14 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mempool-{{ $name }}
+  name: {{ include "bitcoin.mempoolStatefulsetName" $config }}
 spec:
   replicas: {{ $config.mempoolReplicas }}
   selector:
     matchLabels:
       app: mempool
       chain: {{ $config.chain }}
-  serviceName: mempool-{{ $name }}-service
+  serviceName: {{ include "bitcoin.mempoolServiceName" $config }}
   template:
     metadata:
       labels:
@@ -18,12 +18,16 @@ spec:
         chain: {{ $config.chain }}
     spec:
       restartPolicy: Always
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: mariadb
         image: mariadb:10.5.21
         envFrom:
         - configMapRef:
-            name: db-{{ $name }}-config
+            name: {{ include "bitcoin.dbConfigName" $config }}
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: db
@@ -32,10 +36,14 @@ spec:
         command: ["./wait-for-it.sh", "localhost:3306", "--timeout=720", "--strict", "--", "./start.sh"]
         envFrom:
         - configMapRef:
-            name: mempool-{{ $name }}-config
+            name: {{ include "bitcoin.mempoolConfigName" $config }}
         volumeMounts:
         - mountPath: /backend/cache
           name: cache
+        readinessProbe:
+          httpGet:
+            path: /api/v1/blocks/tip/height
+            port: 8999
   volumeClaimTemplates:
   - metadata:
       name: db

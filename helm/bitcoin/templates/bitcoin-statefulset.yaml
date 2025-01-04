@@ -3,20 +3,24 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: bitcoin-{{ $name }}
+  name: {{ include "bitcoin.bitcoinStatefulsetName" $config }}
 spec:
   replicas: {{ $config.bitcoinNodeReplicas }}
   selector:
     matchLabels:
       app: bitcoin
       chain: {{ $config.chain }}
-  serviceName: bitcoin-{{ $name }}-service
+  serviceName: {{ include "bitcoin.bitcoinServiceName" $config }}
   template:
     metadata:
       labels:
         app: bitcoin
         chain: {{ $config.chain }}
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: bitcoin-node
         image: {{ $.Values.acrName }}.azurecr.io/bitcoin:{{ $.Values.bitcoinImageTag }}
@@ -31,15 +35,12 @@ spec:
           mountPath: /root
         readinessProbe:
           exec:
-            command:
-            - /bin/sh
-            - -c
-            - "/root/readiness-probe.sh {{ $config.rpcUser }} {{ $config.rpcPassword }} {{ $config.chain }}"
+            command: ["/bin/sh", "-c", "/root/readiness-probe.sh {{ $config.rpcUser }} {{ $config.rpcPassword }} {{ $config.chain }}"]
       restartPolicy: Always
       volumes:
         - name: files
           projected:
-            defaultMode: 0555
+            defaultMode: 0050
             sources:
             - configMap:
                 name: bitcoin-conf
