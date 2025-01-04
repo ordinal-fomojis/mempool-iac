@@ -88,6 +88,11 @@ testnet.{{ .url }}
 {{- include "bitcoin.name" (dict "chain" .chain "name" "db-config") -}}
 {{- end -}}
 
+{{/* Bitcoin Ingress Name */}}
+{{- define "bitcoin.bitcoinIngressName" -}}
+{{- include "bitcoin.name" (dict "chain" .chain "name" "bitcoin-ingress") -}}
+{{- end -}}
+
 {{/* Mempool URL */}}
 {{- define "bitcoin.mempoolUrl" -}}
 {{- include "bitcoin.url" (dict "chain" .chain "url" "mempool.generatord.io") -}}
