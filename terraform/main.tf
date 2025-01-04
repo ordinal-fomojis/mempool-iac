@@ -51,7 +51,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name       = "default"
-    node_count = 2
+    node_count = var.nodes
     vm_size    = "Standard_D2ps_v6"
   }
 
@@ -62,16 +62,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
 ############ Azure Container Registry ############
 
-resource "random_string" "acr_name" {
-  length  = 5
-  lower   = true
-  numeric = false
-  special = false
-  upper   = false
+resource "random_pet" "acr_name" {
+  prefix    = "registry"
+  separator = ""
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "${random_string.acr_name.result}registry"
+  name                = random_pet.acr_name.id
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
@@ -84,6 +81,16 @@ resource "azurerm_role_assignment" "acr_role" {
   skip_service_principal_aad_check = true
 }
 
-resource "random_password" "btc-rpc-password" {
-  length = 32
+############ Passwords ############
+
+locals {
+  chains         = ["testnet", "mainnet"]
+  password_types = ["rpc", "db", "db-root"]
+  passwords      = toset(flatten([for chain in local.chains : [for password_type in local.password_types : "${chain}-${password_type}"]]))
+}
+
+resource "random_password" "passwords" {
+  for_each = local.passwords
+  length   = 32
+  special  = false
 }

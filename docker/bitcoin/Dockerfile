@@ -4,7 +4,7 @@ WORKDIR /root
 
 RUN apt-get update
 RUN apt-get install --yes build-essential libtool autotools-dev automake \
-  pkg-config bsdmainutils python3 libevent-dev libboost-dev git
+  pkg-config bsdmainutils python3 libevent-dev libboost-dev git jq
 
 RUN git clone https://github.com/bitcoin/bitcoin.git
 WORKDIR /root/bitcoin

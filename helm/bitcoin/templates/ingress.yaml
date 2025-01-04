@@ -1,0 +1,32 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitcoin-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  {{- range $name, $config := .Values.chains -}}
+  {{- if $config.enabled }}
+  - host: {{ include "bitcoin.bitcoinUrl" $config }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "bitcoin.bitcoinServiceName" $config }}
+            port:
+              number: {{ include "bitcoin.rpcPort" $config }}
+  - host: {{ include "bitcoin.mempoolUrl" $config }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "bitcoin.mempoolServiceName" $config }}
+            port:
+              number: 8999
+  {{- end -}}
+  {{- end -}}

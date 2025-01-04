@@ -1,10 +1,5 @@
 name: Deploy Application
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'k8s/**/*.yaml'
   workflow_dispatch:
     inputs:
       environment:
@@ -28,7 +23,7 @@ env:
 
 jobs:
   deploy-application:
-    name: 'Deploy Bitcoin'
+    name: 'Deploy Application'
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -47,19 +42,12 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform Init
-        run: terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
-        working-directory: terraform
-
       - name: Get Terrform Outputs
         id: tf-outputs
         run: |
+          terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
-          echo "k8s_cluster_name=$(terraform output -raw k8s_cluster_name)" >> $GITHUB_OUTPUT
-
-          btc_rpc_password=$(terraform output -raw btc_rpc_password)
-          echo "::add-mask::$btc_rpc_password"
-          echo "btc_rpc_password=$btc_rpc_password" >> "$GITHUB_OUTPUT"
+          echo "kube_cluster_name=$(terraform output -raw kube_cluster_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Set up kubelogin for non-interactive login
@@ -67,47 +55,31 @@ jobs:
         with:
           kubelogin-version: 'v0.0.25'
           
-      - name: Get K8s context
+      - name: Get Kube Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ steps.tf-outputs.outputs.rg_name }}
-          cluster-name: ${{ steps.tf-outputs.outputs.k8s_cluster_name }}
+          cluster-name: ${{ steps.tf-outputs.outputs.kube_cluster_name }}
           admin: 'false'
           use-kubelogin: 'true'
       
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: Create Secret Manifest
+      - name: Deploy
         run: |
-          pip install -r scripts/requirements.txt
-          python scripts/create-kube-rpc-password.py
-        env:
-          NAME: bitcoin-rpc-password
-          USERNAME: admin
-          SECRET: ${{ steps.tf-outputs.outputs.btc_rpc_password }}
-          FILE_PATH: k8s/bitcoin/secret.yaml
+          acr_name=$(terraform output -raw acr_name)
+          image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
+            --orderby time_desc --top 1 --output tsv)
+          passwords=$(terraform output -json passwords)
 
-      - name: Deploy Setup Manifests
-        run: |
-          kubectl apply -f k8s/bitcoin/secret.yaml
-          kubectl apply -f k8s/bitcoin/bitcoin-conf.yaml
-
-      - name: Deploy Testnet
-        run: |
-          kubectl apply -f k8s/bitcoin/testnet.yaml
-          kubectl apply -f k8s/mempool/testnet.yaml
-
-      - name: Await Approval
-        if: ${{ env.ENVIRONMENT == 'prod' }}
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: Vanniix
-          issue-title: "Approval of Mainnet Deployment"
-          issue-body: "Do you want to deploy mainnet?"
-      
-      - name: Deploy Mainnet
-        run: kubectl apply -f k8s/bitcoin/mainnet.yaml
+          helm repo add kubernetes https://kubernetes.github.io/ingress-nginx
+          helm dependency build ../helm/bitcoin
+          helm upgrade --install bitcoin ../helm/bitcoin \
+            --set acrName=$acr_name \
+            --set bitcoinImageTag=$image_tag \
+            --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
+            --set chains.testnet.rpcPassword="$(echo $passwords | jq -r '."testnet-rpc"')" \
+            --set chains.mainnet.rpcPassword="$(echo $passwords | jq -r '."mainnet-rpc"')" \
+            --set chains.testnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
+            --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."mainnet-db"')" \
+            --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
+            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')"
+        working-directory: terraform

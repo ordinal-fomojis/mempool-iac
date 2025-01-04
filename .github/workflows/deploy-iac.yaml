@@ -1,13 +1,6 @@
 name: Deploy IaC
 on:
-  pull_request:
-    types: [ready_for_review, opened, reopened, synchronize]
-  push:
-    branches:
-      - main
-    paths:
-      - 'terraform/**'
-      - '.github/workflows/deploy-iac.yaml'
+  pull_request: ~
   workflow_dispatch:
     inputs:
       environment:
@@ -106,7 +99,7 @@ jobs:
 
   terraform-apply:
     name: 'Terraform Apply'
-    if: needs.terraform-plan.outputs.tfplanExitCode == 2 && github.ref_name == 'main'
+    if: needs.terraform-plan.outputs.tfplanExitCode == 2 && (github.ref_name == 'main' || inputs.environment == 'nonprod')
     runs-on: ubuntu-latest
     environment: production
     needs: [terraform-plan]
@@ -135,7 +128,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3
     
     - name: Terraform Init
-      run: terraform init -backend-config="key=terraform-${{ inputs.environment || 'prod' }}.tfstate"
+      run: terraform init -backend-config="key=terraform-${{ env.ENVIRONMENT }}.tfstate"
 
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4

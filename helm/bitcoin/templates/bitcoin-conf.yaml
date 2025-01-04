@@ -8,8 +8,18 @@ data:
     txindex=1
     server=1
     rpcallowip=0.0.0.0/0
+    coinstatsindex=1
+    listen=1
+    discover=1
+    par=16
+    mempoolfullrbf=1
+    maxconnections=100
+    blocksxor=0
 
     [main]
+    mempoolexpiry=999999
+    maxmempool=3072
+    dbcache=3072
     rpcbind=0.0.0.0
 
     [testnet4]

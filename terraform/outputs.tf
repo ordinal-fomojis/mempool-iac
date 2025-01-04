@@ -1,14 +1,4 @@
-output "client_certificate" {
-  value     = azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate
-  sensitive = true
-}
-
-output "kube_config" {
-  value     = azurerm_kubernetes_cluster.aks.kube_config_raw
-  sensitive = true
-}
-
-output "k8s_cluster_name" {
+output "kube_cluster_name" {
   value = azurerm_kubernetes_cluster.aks.name
 }
 
@@ -20,7 +10,9 @@ output "acr_name" {
   value = azurerm_container_registry.acr.name
 }
 
-output "btc_rpc_password" {
-  value     = random_password.btc-rpc-password.result
+output "passwords" {
+  value = {
+    for key, password in random_password.passwords : key => password.result
+  }
   sensitive = true
 }
