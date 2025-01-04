@@ -74,6 +74,8 @@ jobs:
           image_tag=$(az acr repository show-tags --n $acr_name --repository bitcoin \
             --orderby time_desc --top 1 --output tsv)
           passwords=$(terraform output -json passwords)
+
+          helm dependency build
           helm upgrade --install bitcoin ../helm/bitcoin \
             --set acrName=$acr_name \
             --set bitcoinImageTag=$image_tag \
