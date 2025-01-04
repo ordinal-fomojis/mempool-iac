@@ -63,7 +63,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 ############ Azure Container Registry ############
 
 resource "random_pet" "acr_name" {
-  prefix = "registry"
+  prefix    = "registry"
+  separator = ""
 }
 
 resource "azurerm_container_registry" "acr" {
