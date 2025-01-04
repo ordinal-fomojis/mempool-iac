@@ -94,6 +94,6 @@ testnet.{{ .url }}
 {{- end -}}
 
 {{/* Bitcoin URL */}}
-{{- define "bitcoin.mempoolUrl" -}}
+{{- define "bitcoin.bitcoinUrl" -}}
 {{- include "bitcoin.url" (dict "chain" .chain "url" "bitcoin.generatord.io") -}}
 {{- end -}}
