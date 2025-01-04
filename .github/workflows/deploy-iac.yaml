@@ -1,7 +1,6 @@
 name: Deploy IaC
 on:
-  pull_request:
-    types: [ready_for_review, opened, reopened, synchronize]
+  pull_request: ~
   workflow_dispatch:
     inputs:
       environment:
