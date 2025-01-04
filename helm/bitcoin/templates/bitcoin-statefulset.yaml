@@ -34,7 +34,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - /root/readiness-probe.sh {{ $config.rpcUser }} {{ $config.rpcPassword }} {{ $config.chain }}
+            - "/root/readiness-probe.sh {{ $config.rpcUser }} {{ $config.rpcPassword }} {{ $config.chain }}"
       restartPolicy: Always
       volumes:
         - name: files

@@ -28,7 +28,7 @@ env:
 
 jobs:
   deploy-application:
-    name: 'Deploy Bitcoin'
+    name: 'Deploy Application'
     runs-on: ubuntu-latest
     environment: production
     steps:
