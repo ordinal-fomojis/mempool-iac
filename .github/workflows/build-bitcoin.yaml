@@ -59,35 +59,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: k8s/bitcoin
+          context: docker/bitcoin
           push: true
           tags: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # - name: Setup Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.13'
-
-      # - name: Update Image Tag
-      #   run: |
-      #     pip install -r scripts/requirements.txt
-      #     python scripts/update-image-tag.py
-      #   env:
-      #     IMAGE: ${{ steps.acr-details.outputs.acr_name }}.azurecr.io/bitcoin:${{ github.sha }}
-        
-      # - name: Create Pull Request
-      #   id: create_pr
-      #   uses: peter-evans/create-pull-request@v7
-      #   with:
-      #     commit-message: '[Bot] Update bitcoin image'
-      #     branch: update-bitcoin-image
-      #     title: '[Bot] Update bitcoin image'
-      #     add-paths: 'k8s/bitcoin/*.yaml'
-      #     draft: always-true
-          
-      # - name: Enable Pull Request Automerge
-      #   run: gh pr merge --squash --auto "${{ steps.create_pr.outputs.pull-request-number }}"
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}

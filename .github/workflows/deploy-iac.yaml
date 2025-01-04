@@ -2,12 +2,6 @@ name: Deploy IaC
 on:
   pull_request:
     types: [ready_for_review, opened, reopened, synchronize]
-  push:
-    branches:
-      - main
-    paths:
-      - 'terraform/**'
-      - '.github/workflows/deploy-iac.yaml'
   workflow_dispatch:
     inputs:
       environment:
