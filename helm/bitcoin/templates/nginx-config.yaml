@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-ingress-nginx-controller
+data:
+  annotations-risk-level: Critical
+  allow-snippet-annotations: "true"
