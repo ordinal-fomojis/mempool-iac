@@ -27,6 +27,7 @@ data:
   DATABASE_DATABASE: {{ $dbName }}
   DATABASE_USERNAME: {{ $config.dbUser }}
   DATABASE_PASSWORD: {{ $config.dbPassword }}
+  MEMPOOL_API_URL_PREFIX: {{ include "bitcoin.mempoolPath" $config }}
 ---
 {{- end -}}
 {{- end -}}

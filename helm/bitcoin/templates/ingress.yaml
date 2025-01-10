@@ -10,10 +10,9 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: {{ include "bitcoin.bitcoinUrl" $config }}
-    http:
+  - http:
       paths:
-      - path: /
+      - path: {{ include "bitcoin.bitcoinPath" $config }}
         pathType: Prefix
         backend:
           service:
@@ -32,10 +31,9 @@ spec:
   rules:
   {{- range $name, $config := .Values.chains -}}
   {{- if $config.enabled }}
-  - host: {{ include "bitcoin.mempoolUrl" $config }}
-    http:
+  - http:
       paths:
-      - path: /
+      - path: {{ include "bitcoin.mempoolPath" $config }}
         pathType: Prefix
         backend:
           service:

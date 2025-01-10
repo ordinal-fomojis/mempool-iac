@@ -43,16 +43,16 @@ testnet-{{ .name }}
 {{- end -}}
 {{- end -}}
 
-{{/* Create chain specific url */}}
-{{- define "bitcoin.url" -}}
+{{/* Create chain specific url path */}}
+{{- define "bitcoin.path" -}}
 {{- if .chain | eq "main" -}}
-{{ .url }}
+{{ default "/" .path }}
 {{- else if .chain | eq "test" -}}
-testnet3.{{ .url }}
+{{ .path }}/testnet3
 {{- else if .chain | eq "signet" -}}
-signet.{{ .url }}
+{{ .path }}/signet
 {{- else if .chain | eq "testnet4" -}}
-testnet.{{ .url }}
+{{ .path }}/testnet
 {{- else -}}
 {{ fail "Invalid chain name" }}
 {{- end -}}
@@ -93,12 +93,12 @@ testnet.{{ .url }}
 {{- include "bitcoin.name" (dict "chain" .chain "name" "bitcoin-ingress") -}}
 {{- end -}}
 
-{{/* Mempool URL */}}
-{{- define "bitcoin.mempoolUrl" -}}
-{{- include "bitcoin.url" (dict "chain" .chain "url" "mempool.generatord.io") -}}
+{{/* Bitcoin Path */}}
+{{- define "bitcoin.bitcoinPath" -}}
+{{- include "bitcoin.path" (dict "chain" .chain "path" "") -}}
 {{- end -}}
 
-{{/* Bitcoin URL */}}
-{{- define "bitcoin.bitcoinUrl" -}}
-{{- include "bitcoin.url" (dict "chain" .chain "url" "bitcoin.generatord.io") -}}
+{{/* Mempool Path */}}
+{{- define "bitcoin.bitcoinPath" -}}
+{{- include "bitcoin.path" (dict "chain" .chain "path" "/mempool") -}}
 {{- end -}}
