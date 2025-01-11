@@ -5,16 +5,22 @@ kind: Ingress
 metadata:
   name: {{ include "bitcoin.bitcoinIngressName" $config }}
   annotations:
+    cert-manager.io/issuer: letsencrypt-issuer
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header Authorization "Basic {{ printf "%s:%s" $config.rpcUser $config.rpcPassword | b64enc }}";
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{ $.Values.hostname }}
+    secretName: certificate-tls
   rules:
-  - http:
+  - host: {{ $.Values.hostname }}
+    http:
       paths:
       - path: {{ include "bitcoin.bitcoinPath" $config }}
-        pathType: Prefix
+        pathType: Exact
         backend:
           service:
             name: {{ include "bitcoin.bitcoinServiceName" $config }}
@@ -27,12 +33,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mempool-ingress
+  annotations:
+    cert-manager.io/issuer: letsencrypt-issuer
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{ $.Values.hostname }}
+    secretName: certificate-tls
   rules:
   {{- range $name, $config := .Values.chains -}}
   {{- if $config.enabled }}
-  - http:
+  - host: {{ $.Values.hostname }}
+    http:
       paths:
       - path: {{ include "bitcoin.mempoolPath" $config }}
         pathType: Prefix
