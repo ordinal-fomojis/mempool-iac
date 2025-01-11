@@ -5,6 +5,7 @@ kind: Ingress
 metadata:
   name: {{ include "bitcoin.bitcoinIngressName" $config }}
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header Authorization "Basic {{ printf "%s:%s" $config.rpcUser $config.rpcPassword | b64enc }}";
 spec:
