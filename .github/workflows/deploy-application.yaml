@@ -20,6 +20,8 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ENVIRONMENT: ${{ inputs.environment || 'prod' }}
+  SUB_DOMAIN: ${{ (inputs.environment == 'prod' && 'bitcoin') || 'nonprod.bitcoin' }}
+  DOMAIN: 'generatord.io'
 
 jobs:
   deploy-application:
@@ -87,7 +89,8 @@ jobs:
             --set chains.testnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
             --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."mainnet-db"')" \
             --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
-            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')"
+            --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')" \
+            --set hostname=$SUB_DOMAIN.$DOMAIN
         working-directory: terraform
     
       - name: Setup Node
@@ -102,6 +105,4 @@ jobs:
         working-directory: dns
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          DOMAIN: 'generatord.io'
-          SUB_DOMAIN: bitcoin
           TEAM_SLUG: fomojis
