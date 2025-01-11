@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "tsc && node dist/setup-dns.js"
+  },
+  "dependencies": {
+    "@types/node": "^22.10.5",
+    "@vercel/sdk": "^1.2.2",
+    "zod": "^3.24.1"
+  }
+}

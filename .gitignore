@@ -28,3 +28,6 @@ terraform.rc
 .commands.txt
 .idea
 helm/**/charts
+node_modules
+dist
+.DS_Store
