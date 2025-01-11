@@ -42,7 +42,7 @@ spec:
           name: cache
         readinessProbe:
           httpGet:
-            path: /api/v1/blocks/tip/height
+            path: {{ include "bitcoin.mempoolPath" $config }}/blocks/tip/height
             port: 8999
   volumeClaimTemplates:
   - metadata:
