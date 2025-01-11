@@ -1,6 +1,6 @@
 acrName: acr-name
 bitcoinImageTag: tag
-hostname: bitcoin.generatord.io
+hostname: null
 
 chains:
   mainnet:
