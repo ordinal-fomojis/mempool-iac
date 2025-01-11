@@ -99,6 +99,6 @@ testnet-{{ .name }}
 {{- end -}}
 
 {{/* Mempool Path */}}
-{{- define "bitcoin.bitcoinPath" -}}
+{{- define "bitcoin.mempoolPath" -}}
 {{- include "bitcoin.path" (dict "chain" .chain "path" "/mempool") -}}
 {{- end -}}
