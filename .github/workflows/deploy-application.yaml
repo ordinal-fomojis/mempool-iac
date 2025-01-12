@@ -81,8 +81,8 @@ jobs:
 
           helm dependency build ../helm/bitcoin
           helm upgrade --install bitcoin ../helm/bitcoin \
-            --set acrName=$acr_name \
-            --set bitcoinImageTag=$image_tag \
+            --set acrName="$acr_name" \
+            --set bitcoinImageTag="$image_tag" \
             --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
             --set chains.testnet.rpcPassword="$(echo $passwords | jq -r '."testnet-rpc"')" \
             --set chains.mainnet.rpcPassword="$(echo $passwords | jq -r '."mainnet-rpc"')" \
@@ -90,7 +90,8 @@ jobs:
             --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."mainnet-db"')" \
             --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
             --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')" \
-            --set hostname=$SUB_DOMAIN.$DOMAIN
+            --set hostname="$SUB_DOMAIN.$DOMAIN" \
+            --set basicAuthPassword="${{ secrets.API_PASSWORD }}"
         working-directory: terraform
     
       - name: Setup Node
