@@ -52,7 +52,7 @@ spec:
       - ReadWriteOnce
       resources:
         requests:
-          storage: 5Gi
+          storage: {{ $config.dbSize }}
       storageClassName: managed
   - metadata:
       name: cache
@@ -61,7 +61,7 @@ spec:
       - ReadWriteOnce
       resources:
         requests:
-          storage: 5Gi
+          storage: {{ $config.cacheSize }}
       storageClassName: managed
 ---
 {{- end -}}
