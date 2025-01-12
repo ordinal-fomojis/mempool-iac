@@ -19,7 +19,6 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ENVIRONMENT: ${{ inputs.environment || 'prod' }}
   SUB_DOMAIN: ${{ (inputs.environment == 'prod' && 'bitcoin') || 'nonprod.bitcoin' }}
   DOMAIN: 'generatord.io'
 
@@ -27,7 +26,7 @@ jobs:
   deploy-application:
     name: 'Deploy Application'
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +46,7 @@ jobs:
       - name: Get Terrform Outputs
         id: tf-outputs
         run: |
-          terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
+          terraform init -backend-config="key=terraform-${{ inputs.environment }}.tfstate"
           echo "rg_name=$(terraform output -raw rg_name)" >> $GITHUB_OUTPUT
           echo "kube_cluster_name=$(terraform output -raw kube_cluster_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
@@ -81,18 +80,22 @@ jobs:
 
           helm dependency build ../helm/bitcoin
           helm upgrade --install bitcoin ../helm/bitcoin \
-            --set acrName=$acr_name \
-            --set bitcoinImageTag=$image_tag \
-            --set chains.mainnet.enabled=${{ env.ENVIRONMENT == 'prod' }} \
+            --set acrName="$acr_name" \
+            --set bitcoinImageTag="$image_tag" \
+            --set chains.mainnet.enabled=${{ inputs.environment == 'prod' }} \
             --set chains.testnet.rpcPassword="$(echo $passwords | jq -r '."testnet-rpc"')" \
             --set chains.mainnet.rpcPassword="$(echo $passwords | jq -r '."mainnet-rpc"')" \
             --set chains.testnet.dbPassword="$(echo $passwords | jq -r '."testnet-db"')" \
             --set chains.mainnet.dbPassword="$(echo $passwords | jq -r '."mainnet-db"')" \
             --set chains.testnet.dbRootPassword="$(echo $passwords | jq -r '."testnet-db-root"')" \
             --set chains.mainnet.dbRootPassword="$(echo $passwords | jq -r '."mainnet-db-root"')" \
-            --set hostname=$SUB_DOMAIN.$DOMAIN
+            --set hostname="$SUB_DOMAIN.$DOMAIN" \
+            --set basicAuthPassword="${{ secrets.API_PASSWORD }}"
         working-directory: terraform
-    
+          
+      - name: Sleep
+        run: sleep 30
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

@@ -90,10 +90,10 @@ async function getDnsRecord(teamId: string) {
   if (typeof response === 'string') {
     throw new Error(`Unknown DNS query response: ${response}`)
   }
-  const records = response.records.filter(record => record.type === 'A' && record.name === 'bitcoin')
+  const records = response.records.filter(record => record.type === 'A' && record.name === SUB_DOMAIN)
   const record = records[0]
   if (records.length > 1) {
-    throw new Error(`Found ${records.length} DNS records for bitcoin.generatord.io. Expected 0 or 1.`)
+    throw new Error(`Found ${records.length} DNS records for ${SUB_DOMAIN}.${DOMAIN}. Expected 0 or 1.`)
   }
   return record
 }

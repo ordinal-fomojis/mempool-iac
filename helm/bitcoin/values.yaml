@@ -2,6 +2,9 @@ acrName: acr-name
 bitcoinImageTag: tag
 hostname: null
 
+basicAuthUser: admin
+basicAuthPassword: null
+
 chains:
   mainnet:
     enabled: false

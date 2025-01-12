@@ -20,13 +20,12 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ENVIRONMENT: ${{ inputs.environment || 'prod' }}
 
 jobs:
   deploy-application:
     name: 'Build Bitcoin'
     runs-on: linux-arm64
-    environment: production
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,7 +45,7 @@ jobs:
       - name: Get ACR Details
         id: acr-details
         run: |
-          terraform init -backend-config="key=terraform-$ENVIRONMENT.tfstate"
+          terraform init -backend-config="key=terraform-${{ inputs.environment }}.tfstate"
           echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         working-directory: terraform
 

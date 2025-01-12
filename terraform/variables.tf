@@ -9,3 +9,7 @@ variable "nodes" {
 variable "location" {
   type = string
 }
+
+variable "vm_size" {
+  type = string
+}
