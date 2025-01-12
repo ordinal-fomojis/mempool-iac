@@ -27,7 +27,7 @@ jobs:
   deploy-application:
     name: 'Deploy Application'
     runs-on: ubuntu-latest
-    environment: $ENVIRONMENT
+    environment: ${{ env.ENVIRONMENT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

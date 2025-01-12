@@ -31,7 +31,7 @@ jobs:
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
-    environment: $ENVIRONMENT
+    environment: ${{ env.ENVIRONMENT }}
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
       formatted_plan: ${{ steps.publish-terraform-plan.outputs.formatted_plan }}
