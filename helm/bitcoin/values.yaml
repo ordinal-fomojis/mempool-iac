@@ -16,7 +16,10 @@ chains:
     dbRootPassword: null
     bitcoinStorage: 1Ti
     bitcoinNodeReplicas: 1
-    mempoolReplicas: 3
+    mempoolReplicas: 1
+    spawnProcs: 3
+    dbSize: 16Gi
+    cacheSize: 16Gi
   testnet:
     enabled: true
     chain: testnet4
@@ -25,9 +28,12 @@ chains:
     dbUser: mempool
     dbPassword: null
     dbRootPassword: null
-    bitcoinStorage: 100Gi
+    bitcoinStorage: 64Gi
     bitcoinNodeReplicas: 1
     mempoolReplicas: 1
+    spawnProcs: 1
+    dbSize: 4Gi
+    cacheSize: 4Gi
 
 ingress-nginx:
   controller:

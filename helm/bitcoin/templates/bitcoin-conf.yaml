@@ -18,8 +18,8 @@ data:
 
     [main]
     mempoolexpiry=999999
-    maxmempool=3072
-    dbcache=3072
+    maxmempool=4096
+    dbcache=8192
     rpcbind=0.0.0.0
 
     [testnet4]
