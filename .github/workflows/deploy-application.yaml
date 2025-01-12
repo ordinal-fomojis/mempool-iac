@@ -27,7 +27,7 @@ jobs:
   deploy-application:
     name: 'Deploy Application'
     runs-on: ubuntu-latest
-    environment: production
+    environment: $ENVIRONMENT
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -93,7 +93,10 @@ jobs:
             --set hostname="$SUB_DOMAIN.$DOMAIN" \
             --set basicAuthPassword="${{ secrets.API_PASSWORD }}"
         working-directory: terraform
-    
+          
+      - name: Sleep
+        run: sleep 30
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
