@@ -101,7 +101,7 @@ jobs:
     name: 'Terraform Apply'
     if: needs.terraform-plan.outputs.tfplanExitCode == 2 && (github.ref_name == 'main' || inputs.environment == 'nonprod')
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ inputs.environment || 'prod' }}
     needs: [terraform-plan]
     
     steps:
