@@ -12,5 +12,6 @@ spec:
   selector:
     app: mempool
     chain: {{ $config.chain }}
+---
 {{- end -}}
 {{- end -}}
